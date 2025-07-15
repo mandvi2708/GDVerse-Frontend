@@ -9,17 +9,18 @@ function Dashboard() {
   const [deletingId, setDeletingId] = useState(null);
   const navigate = useNavigate();
 
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+
   const fetchSessions = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/sessions/my-sessions', {
+      const res = await axios.get(`${backendURL}/api/sessions/my-sessions`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSessions(res.data);
     } catch (err) {
       console.error('Failed to fetch sessions:', err.message);
-      // Show error message in UI
       const errorDiv = document.createElement('div');
       errorDiv.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded shadow-lg';
       errorDiv.textContent = 'Failed to load sessions';
@@ -40,16 +41,14 @@ function Dashboard() {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/sessions/delete/${id}`, {
+      await axios.delete(`${backendURL}/api/sessions/delete/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      // Show success message
       const successDiv = document.createElement('div');
       successDiv.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg';
       successDiv.textContent = 'Session deleted successfully';
       document.body.appendChild(successDiv);
       setTimeout(() => successDiv.remove(), 3000);
-      
       fetchSessions();
     } catch (err) {
       console.error('Delete failed:', err.message);
@@ -60,7 +59,6 @@ function Dashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    // Show logout message
     const logoutDiv = document.createElement('div');
     logoutDiv.className = 'fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded shadow-lg';
     logoutDiv.textContent = 'Logged out successfully';

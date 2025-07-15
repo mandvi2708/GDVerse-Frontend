@@ -17,16 +17,19 @@ function Login() {
     setError('');
     setLoading(true);
 
-    try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', formData);
-      localStorage.setItem('token', res.data.token);
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+   try {
+  const res = await axios.post(
+    `${import.meta.env.VITE_BACKEND_URL}/api/auth/login`,
+    formData
+  );
+  localStorage.setItem('token', res.data.token);
+  navigate('/dashboard');
+} catch (err) {
+  setError(err.response?.data?.message || 'Login failed. Please try again.');
+} finally {
+  setLoading(false);
+}
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

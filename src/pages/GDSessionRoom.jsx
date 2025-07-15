@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import Peer from 'simple-peer';
 
-const socket = io('http://localhost:5000'); // ✅ Backend server
+const socket = io(import.meta.env.VITE_BACKEND_URL); // ✅ Replaced localhost with env variable
 
 function GDSessionRoom() {
   const { inviteLink } = useParams();
@@ -60,7 +60,6 @@ function GDSessionRoom() {
     };
   }, []);
 
-  // ✅ Now defined outside useEffect and works as expected
   const toggleScreenShare = async () => {
     if (!isScreenSharing) {
       try {
@@ -88,7 +87,6 @@ function GDSessionRoom() {
         console.error('Screen sharing failed', err);
       }
     } else {
-      // Stop screen sharing manually
       peersRef.current.forEach(({ peer }) => {
         const sender = peer._pc.getSenders().find(s => s.track.kind === 'video');
         if (sender) sender.replaceTrack(stream.getVideoTracks()[0]);
@@ -157,41 +155,39 @@ function GDSessionRoom() {
         ))}
       </div>
 
-      {/* Controls */}
-    {/* 🎮 Floating Control Bar */}
-<div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 z-50 bg-white/90 shadow-lg border rounded-full px-6 py-3 flex gap-4 items-center">
-  <button
-    onClick={toggleAudio}
-    className="text-indigo-700 hover:text-white hover:bg-indigo-600 transition px-3 py-2 rounded-full"
-  >
-    {audioEnabled ? '🔇' : '🎙️'}
-  </button>
+      {/* 🎮 Floating Control Bar */}
+      <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 z-50 bg-white/90 shadow-lg border rounded-full px-6 py-3 flex gap-4 items-center">
+        <button
+          onClick={toggleAudio}
+          className="text-indigo-700 hover:text-white hover:bg-indigo-600 transition px-3 py-2 rounded-full"
+        >
+          {audioEnabled ? '🔇' : '🎙️'}
+        </button>
 
-  <button
-    onClick={toggleVideo}
-    className="text-indigo-700 hover:text-white hover:bg-indigo-600 transition px-3 py-2 rounded-full"
-  >
-    {videoEnabled ? '📷' : '📸'}
-  </button>
+        <button
+          onClick={toggleVideo}
+          className="text-indigo-700 hover:text-white hover:bg-indigo-600 transition px-3 py-2 rounded-full"
+        >
+          {videoEnabled ? '📷' : '📸'}
+        </button>
 
-  <button
-    onClick={toggleScreenShare}
-    className="text-yellow-600 hover:text-white hover:bg-yellow-500 transition px-3 py-2 rounded-full"
-  >
-    {isScreenSharing ? '🛑' : '🖥️'}
-  </button>
+        <button
+          onClick={toggleScreenShare}
+          className="text-yellow-600 hover:text-white hover:bg-yellow-500 transition px-3 py-2 rounded-full"
+        >
+          {isScreenSharing ? '🛑' : '🖥️'}
+        </button>
 
-  <button
-    onClick={leaveMeeting}
-    className="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition"
-  >
-    🚪 Leave
-  </button>
-</div>
-
+        <button
+          onClick={leaveMeeting}
+          className="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition"
+        >
+          🚪 Leave
+        </button>
+      </div>
 
       {/* Chat Panel */}
-      <div className="max-w-2xl mx-auto w-full bg-white p-4 rounded shadow">
+      <div className="max-w-2xl mx-auto w-full bg-white p-4 rounded shadow mt-10">
         <h3 className="text-lg font-semibold mb-2 text-indigo-700">💬 Chat</h3>
 
         <div className="h-48 overflow-y-auto border rounded p-2 mb-3 bg-gray-50 text-sm">

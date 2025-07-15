@@ -11,7 +11,7 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', formData);
+      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/register`, formData);
       alert('Registered successfully!');
       console.log(res.data);
     } catch (err) {
@@ -21,7 +21,7 @@ function Register() {
 
   return (
     <form onSubmit={handleSubmit}>
-        <p>Don't have an account? <a href="/register">Register here</a></p>
+      <p>Don't have an account? <a href="/register">Register here</a></p>
 
       <input name="name" placeholder="Name" onChange={handleChange} required />
       <input name="email" placeholder="Email" onChange={handleChange} required />
