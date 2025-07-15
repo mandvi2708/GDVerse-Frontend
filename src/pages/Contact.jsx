@@ -68,8 +68,8 @@ function Contact() {
               </div>
               <div>
                 <h3 className="text-xl font-bold mb-2">Call Us</h3>
-                <p className="text-gray-400">+1 (555) 123-4567</p>
-                <p className="text-gray-400">Mon-Fri: 9am-5pm EST</p>
+                <p className="text-gray-400">+91-9998887776</p>
+                <p className="text-gray-400">Mon-Fri: 9am-5pm IST</p>
               </div>
             </div>
 
@@ -83,7 +83,7 @@ function Contact() {
               <div>
                 <h3 className="text-xl font-bold mb-2">Visit Us</h3>
                 <p className="text-gray-400">123 Tech Park</p>
-                <p className="text-gray-400">San Francisco, CA 94107</p>
+                <p className="text-gray-400">Delhi India</p>
               </div>
             </div>
           </div>
