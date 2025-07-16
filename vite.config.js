@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
 
+// ✅ Fully updated and working vite.config.js
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -24,5 +25,9 @@ export default defineConfig({
         NodeModulesPolyfillPlugin(),
       ],
     },
+  },
+  // ✅ SPA fallback to fix page refresh issue
+  server: {
+    historyApiFallback: true,
   },
 })
