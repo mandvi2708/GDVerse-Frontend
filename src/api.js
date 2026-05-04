@@ -18,7 +18,7 @@ export const getBaseURL = () => {
 
 const api = axios.create({
   baseURL: getBaseURL(),
-  withCredentials: true,
+  withCredentials: false,
 });
 
 // Automatically attach JWT token to every request
