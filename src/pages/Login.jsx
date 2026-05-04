@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate, Link } from 'react-router-dom';
 
 function Login() {
@@ -17,18 +17,15 @@ function Login() {
     setError('');
     setLoading(true);
 
-   try {
-  const res = await axios.post(
-    `${import.meta.env.VITE_BACKEND_URL}/api/auth/login`,
-    formData
-  );
-  localStorage.setItem('token', res.data.token);
-  navigate('/dashboard');
-} catch (err) {
-  setError(err.response?.data?.message || 'Login failed. Please try again.');
-} finally {
-  setLoading(false);
-}
+    try {
+      const res = await api.post('/api/auth/login', formData);
+      localStorage.setItem('token', res.data.token);
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

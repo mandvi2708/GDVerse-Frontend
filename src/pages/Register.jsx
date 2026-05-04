@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 
 function Register() {
@@ -23,10 +23,7 @@ function Register() {
     setLoading(true);
 
     try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/auth/register`,
-        formData
-      );
+      const res = await api.post('/api/auth/register', formData);
       localStorage.setItem('token', res.data.token);
       navigate('/dashboard');
     } catch (err) {

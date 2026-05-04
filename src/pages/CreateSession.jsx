@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 
 function CreateSession() {
@@ -30,9 +30,7 @@ function CreateSession() {
     const token = localStorage.getItem('token');
 
     try {
-      const res = await axios.post(`${backendURL}/api/sessions/create`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await api.post('/api/sessions/create', formData);
       setInviteLink(res.data.inviteLink);
       setShowSuccess(true);
     } catch (err) {

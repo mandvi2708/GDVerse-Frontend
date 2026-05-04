@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Link, useNavigate } from 'react-router-dom';
 
 function Dashboard() {
@@ -11,15 +11,10 @@ function Dashboard() {
   const [selectedMom, setSelectedMom] = useState('');
   const navigate = useNavigate();
 
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
-
   const fetchSessions = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get(`${backendURL}/api/sessions/my-sessions`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.get('/api/sessions/my-sessions');
       setSessions(res.data);
     } catch (err) {
       console.error('Failed to fetch sessions:', err.message);

@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import Peer from 'simple-peer';
+import { getBaseURL } from '../api';
 
-const socket = io(import.meta.env.VITE_BACKEND_URL);
+const socket = io(getBaseURL());
 
 function GDSessionRoom() {
   const { inviteLink } = useParams();
@@ -214,7 +215,7 @@ function GDSessionRoom() {
     try {
       // First, we need to get the session ID from the database using the inviteLink
       // But for now, let's assume we can find it by inviteLink on the backend
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/sessions/join/${inviteLink}`);
+      const response = await fetch(`${getBaseURL()}/api/sessions/join/${inviteLink}`);
       const sessionData = await response.json();
       
       if (sessionData && sessionData._id) {
