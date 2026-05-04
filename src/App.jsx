@@ -17,9 +17,9 @@ function App() {
       <Route path="/contact" element={<Contact />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/create-session" element={<CreateSession />} />
-      <Route path="/session/:inviteLink" element={<GDSessionRoom />} />
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/create-session" element={<ProtectedRoute><CreateSession /></ProtectedRoute>} />
+      <Route path="/session/:inviteLink" element={<ProtectedRoute><GDSessionRoom /></ProtectedRoute>} />
     </Routes>
   );
 }
