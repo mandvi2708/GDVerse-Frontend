@@ -70,7 +70,8 @@ function GDSessionRoom() {
         return;
       }
 
-      socket.emit('join-room', { roomId: inviteLink, name: userName });
+      const normalizedRoomId = inviteLink?.trim().toLowerCase();
+      socket.emit('join-room', { roomId: normalizedRoomId, name: userName });
       // If we don't get all-users, still show UI after a bit
       setTimeout(() => setIsLoading(false), 3000);
 
@@ -256,6 +257,9 @@ function GDSessionRoom() {
       { urls: 'stun:stun.l.google.com:19302' },
       { urls: 'stun:stun1.l.google.com:19302' },
       { urls: 'stun:stun2.l.google.com:19302' },
+      { urls: 'stun:stun3.l.google.com:19302' },
+      { urls: 'stun:stun4.l.google.com:19302' },
+      { urls: 'stun:stun.services.mozilla.com' },
     ]
   };
 
