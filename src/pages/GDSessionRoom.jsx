@@ -144,6 +144,14 @@ function GDSessionRoom() {
       setIsLoading(false);
     });
 
+    return () => {
+      socket.disconnect();
+      handleUnload();
+      window.removeEventListener('beforeunload', handleUnload);
+      clearTimeout(loadingTimeout);
+    };
+  }, [inviteLink, userName, currentUser, navigate]);
+
   // 5. Sync Local Video (Fixes black screen when loading finishes)
   useEffect(() => {
     if (!isLoading && userVideo.current && localStream) {
@@ -152,14 +160,6 @@ function GDSessionRoom() {
       userVideo.current.play().catch(e => console.error("Local play error:", e));
     }
   }, [isLoading, localStream]);
-
-  return () => {
-    socket.disconnect();
-    handleUnload();
-    window.removeEventListener('beforeunload', handleUnload);
-    clearTimeout(loadingTimeout);
-  };
-}, [inviteLink, userName, currentUser, navigate]);
 
   // 4. Transcription Lifecycle (Separate from Socket)
   useEffect(() => {
