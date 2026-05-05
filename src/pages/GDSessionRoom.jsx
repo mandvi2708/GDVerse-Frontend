@@ -117,7 +117,7 @@ function GDSessionRoom() {
 
       // 1. Existing users in room
       socketRef.current.on('all-users', (users) => {
-        console.log('Existing users:', users);
+        console.log('📡 [Signal] Existing users:', users);
         const peers = [];
         users.forEach(({ userId, name }) => {
           const peer = createPeer(userId, socketRef.current.id, stream, name);
@@ -130,7 +130,8 @@ function GDSessionRoom() {
 
       // 2. New user joining (I wait for their signal)
       socketRef.current.on('user-joined', ({ userId, name }) => {
-        console.log('New participant:', name);
+        console.log('📡 [Signal] New participant joined:', name);
+        // We don't signal yet, we wait for their initiator signal
         const peer = addPeer(null, userId, stream, name);
         peersRef.current.push({ peerID: userId, peer, name });
         setPeers(prev => [...prev, { peerID: userId, peer, remoteStream: null, name }]);
@@ -138,6 +139,7 @@ function GDSessionRoom() {
 
       // 3. Signaling
       socketRef.current.on('signal', ({ senderId, signal }) => {
+        console.log('📡 [Signal] Received signal from:', senderId);
         const item = peersRef.current.find(p => p.peerID === senderId);
         if (item) {
           item.peer.signal(signal);
@@ -149,15 +151,18 @@ function GDSessionRoom() {
       });
 
       socketRef.current.on('user-left', id => {
+        console.log('📡 [Signal] Participant left:', id);
         const peerObj = peersRef.current.find(p => p.peerID === id);
-        if (peerObj) peerObj.peer.destroy();
+        if (peerObj) {
+          try { peerObj.peer.destroy(); } catch (e) { console.error(e); }
+        }
         peersRef.current = peersRef.current.filter(p => p.peerID !== id);
         setPeers(prev => prev.filter(p => p.peerID !== id));
       });
       
       setIsLoading(false);
     }).catch(err => {
-      console.error('Stream error:', err);
+      console.error('❌ [Media] Stream error:', err);
       setError('Could not access media devices. Please check permissions.');
       setIsLoading(false);
     });
@@ -207,23 +212,43 @@ function GDSessionRoom() {
     }
   }, [messages]);
 
+  const peerConfig = {
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'stun:stun2.l.google.com:19302' },
+    ]
+  };
+
   const createPeer = (userToSignal, callerID, stream, name) => {
-    const peer = new Peer({ initiator: true, trickle: false, stream });
+    const peer = new Peer({ 
+      initiator: true, 
+      trickle: false, 
+      stream,
+      config: peerConfig
+    });
     peer.on('signal', signal => {
       socketRef.current.emit('signal', { targetId: userToSignal, signal });
     });
     peer.on('stream', remoteStream => {
+      console.log(`📡 [Stream] Received remote stream from: ${name}`);
       setPeers(prev => prev.map(p => p.peerID === userToSignal ? { ...p, remoteStream, name } : p));
     });
     return peer;
   };
 
   const addPeer = (incomingSignal, callerID, stream, name) => {
-    const peer = new Peer({ initiator: false, trickle: false, stream });
+    const peer = new Peer({ 
+      initiator: false, 
+      trickle: false, 
+      stream,
+      config: peerConfig
+    });
     peer.on('signal', signal => {
       socketRef.current.emit('signal', { targetId: callerID, signal });
     });
     peer.on('stream', remoteStream => {
+      console.log(`📡 [Stream] Received remote stream from (passive): ${name}`);
       setPeers(prev => prev.map(p => p.peerID === callerID ? { ...p, remoteStream, name } : p));
     });
     if (incomingSignal) peer.signal(incomingSignal);
@@ -658,13 +683,28 @@ function Video({ peerID, remoteStream, name }) {
 
   useEffect(() => {
     if (ref.current && remoteStream) {
+      console.log(`🎥 [Video] Assigning stream to participant: ${name}`);
       ref.current.srcObject = remoteStream;
+      
+      // Auto-play handle for some browsers
+      const playPromise = ref.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.warn("Autoplay was prevented. User might need to interact first.", error);
+        });
+      }
     }
-  }, [remoteStream]);
+  }, [remoteStream, name]);
 
   return (
     <div className="relative group aspect-video rounded-2xl overflow-hidden bg-slate-800 shadow-2xl border border-slate-700 transition-all hover:scale-[1.02]">
-      <video ref={ref} autoPlay playsInline className="w-full h-full object-cover" />
+      <video 
+        ref={ref} 
+        autoPlay 
+        playsInline 
+        className="w-full h-full object-cover"
+        style={{ transform: 'scaleX(1)' }} // Remote video should not be mirrored
+      />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
         <div className="flex items-center gap-2">
           <span className="px-2 py-1 bg-slate-900/80 backdrop-blur-md rounded text-[10px] font-bold uppercase tracking-widest">{name || 'Participant'}</span>
@@ -674,7 +714,7 @@ function Video({ peerID, remoteStream, name }) {
         <div className="absolute inset-0 flex items-center justify-center bg-slate-900">
           <div className="flex flex-col items-center gap-4">
             <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-widest">Connecting...</p>
+            <p className="text-xs font-medium text-slate-500 uppercase tracking-widest">Connecting Stream...</p>
           </div>
         </div>
       )}
