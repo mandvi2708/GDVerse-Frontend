@@ -31,41 +31,48 @@ function GDSessionRoom() {
   const socketRef = useRef();
   const streamRef = useRef();
 
-  // Get current user info
-  const userStr = localStorage.getItem('user');
-  const user = userStr ? JSON.parse(userStr) : null;
-  const userName = user?.name || 'Anonymous';
+  const [currentUser, setCurrentUser] = useState(() => {
+    const userStr = localStorage.getItem('user');
+    return userStr ? JSON.parse(userStr) : null;
+  });
+  const userName = currentUser?.name || 'Anonymous';
 
   // Auth Guard
   useEffect(() => {
-    if (!user) {
+    if (!currentUser) {
       sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
       navigate('/login');
     }
-  }, [user, navigate]);
+  }, [currentUser, navigate]);
 
   // 1. Initial Socket & Room Setup (Once)
   useEffect(() => {
-    if (!user) return;
+    if (!currentUser) return;
     
     socketRef.current = io(getBaseURL(), {
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'], // Polling first is more reliable on Render
       reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
+      reconnectionDelay: 2000,
+      timeout: 20000,
     });
     
     const socket = socketRef.current;
 
-    // Loading timeout fallback
+    // Loading timeout fallback (shorter)
     const loadingTimeout = setTimeout(() => {
       setIsLoading(false);
-    }, 8000);
+    }, 6000);
 
     const setupSocket = async () => {
       const isTimeReady = await checkSessionStatus();
-      if (!isTimeReady) return;
+      if (!isTimeReady) {
+        setIsLoading(false);
+        return;
+      }
 
       socket.emit('join-room', { roomId: inviteLink, name: userName });
+      // If we don't get all-users, still show UI after a bit
+      setTimeout(() => setIsLoading(false), 3000);
 
       socket.on('all-users', (users) => {
         console.log('📡 [Signal] Existing users:', users);
@@ -133,7 +140,7 @@ function GDSessionRoom() {
 
     socket.on('connect_error', (err) => {
       console.error('❌ [Socket] Connection error:', err);
-      setIsLoading(false); // At least let them see the UI
+      setIsLoading(false);
     });
 
     return () => {
@@ -142,7 +149,7 @@ function GDSessionRoom() {
       window.removeEventListener('beforeunload', handleUnload);
       clearTimeout(loadingTimeout);
     };
-  }, [inviteLink, userName, user, navigate]);
+  }, [inviteLink, userName, currentUser, navigate]);
 
   // 4. Transcription Lifecycle (Separate from Socket)
   useEffect(() => {
