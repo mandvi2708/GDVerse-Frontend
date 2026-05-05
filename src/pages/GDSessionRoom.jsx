@@ -179,29 +179,42 @@ function GDSessionRoom() {
   };
 
 
-  // Bot Activity Simulation (Moved out of previous useEffect)
+  // Bot Activity Simulation (Intelligent)
   useEffect(() => {
     if (botCount > 0) {
-      const botInterval = setInterval(() => {
-        if (messages.length > 0 && Math.random() > 0.7) {
+      const botInterval = setInterval(async () => {
+        // Only talk if there's some human activity
+        const humanMessages = messages.filter(m => !m.isAI);
+        if (humanMessages.length > 0 && Math.random() > 0.6) {
           const botId = Math.floor(Math.random() * botCount) + 1;
           const botName = `AI Bot ${botId}`;
           
-          const aiMessage = {
-            sender: botName,
-            content: `[AI Analysis] I've analyzed the current discussion. Here's a thought: We should focus on how this impacts long-term scalability. What do you think?`,
-            timestamp: new Date().toISOString(),
-            senderName: botName,
-            isAI: true
-          };
-          
-          setMessages(prev => [...prev, aiMessage]);
+          try {
+            const res = await api.post('/api/ai/bot-response', {
+              transcript: messages.slice(-15),
+              botName
+            });
+
+            if (res.data.response) {
+              const aiMessage = {
+                sender: botName,
+                content: res.data.response,
+                timestamp: new Date().toISOString(),
+                senderName: botName,
+                isAI: true
+              };
+              
+              setMessages(prev => [...prev, aiMessage]);
+            }
+          } catch (err) {
+            console.error("AI Bot failed to respond:", err);
+          }
         }
-      }, 15000);
+      }, 30000); // Check every 30 seconds
 
       return () => clearInterval(botInterval);
     }
-  }, [botCount, messages.length]);
+  }, [botCount, messages]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
