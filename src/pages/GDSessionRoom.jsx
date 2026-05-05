@@ -339,11 +339,6 @@ function GDSessionRoom() {
 
   const leaveMeeting = () => {
     if (window.confirm("Are you sure you want to leave the meeting?")) {
-      // 1. Stop all tracks immediately
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => {
-          track.stop();
-          console.log(`📡 [Media] Stopped track: ${track.kind}`);
         });
       }
       
