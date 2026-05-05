@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import Peer from 'simple-peer';
-import { getBaseURL } from '../api';
-
-const socket = io(getBaseURL());
+import api, { getBaseURL } from '../api';
 
 function GDSessionRoom() {
   const { inviteLink } = useParams();
+  const navigate = useNavigate();
   const [peers, setPeers] = useState([]); // Stores { peerID, peer, remoteStream, name }
   const [localStream, setLocalStream] = useState();
   const [audioEnabled, setAudioEnabled] = useState(true);
@@ -22,6 +21,9 @@ function GDSessionRoom() {
   const [showMomModal, setShowMomModal] = useState(false);
   const [isGeneratingMom, setIsGeneratingMom] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [botCount, setBotCount] = useState(0);
 
   const userVideo = useRef();
   const peersRef = useRef([]); // Stores { peerID, peer, name }
@@ -29,8 +31,17 @@ function GDSessionRoom() {
   const socketRef = useRef();
 
   // Get current user info
-  const user = JSON.parse(localStorage.getItem('user') || '{"name": "Anonymous"}');
-  const userName = user.name;
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  const userName = user?.name || 'Anonymous';
+
+  // Auth Guard
+  useEffect(() => {
+    if (!user) {
+      sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
+      navigate('/login');
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     socketRef.current = io(getBaseURL());
@@ -69,19 +80,20 @@ function GDSessionRoom() {
       }
     }
 
-    const [botCount, setBotCount] = useState(0);
-
     const checkSessionStatus = async () => {
       try {
         const res = await api.get(`/api/sessions/join/${inviteLink}`);
         const { date, time, aiCount } = res.data;
         setBotCount(aiCount || 0);
 
-        const sessionDate = new Date(`${date}T${time}`);
-        const now = new Date();
+        const sessionDate = new Date(`${date} ? ${date}T${time} : ${date}`);
+        // Handle malformed date/time strings if necessary, but assume standard format
+        const scheduledTime = new Date(`${date}T${time}`).getTime();
+        const now = new Date().getTime();
 
-        if (now < sessionDate) {
+        if (now < scheduledTime) {
           setError(`This session is scheduled for ${date} at ${time}. Please join at that time!`);
+          setIsLoading(false);
           return false;
         }
         return true;
@@ -90,30 +102,6 @@ function GDSessionRoom() {
         return true;
       }
     };
-
-    // Bot Activity Simulation
-    useEffect(() => {
-      if (botCount > 0) {
-        const botInterval = setInterval(() => {
-          // Only talk if there's some recent human activity to react to
-          if (messages.length > 0 && Math.random() > 0.7) {
-            const botId = Math.floor(Math.random() * botCount) + 1;
-            const botName = `AI Bot ${botId}`;
-            
-            const aiMessage = {
-              sender: botName,
-              text: `[AI Analysis] I've analyzed the current discussion. Here's a thought: We should focus on how this impacts long-term scalability. What do you think?`,
-              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              isAI: true
-            };
-            
-            setMessages(prev => [...prev, aiMessage]);
-          }
-        }, 15000); // Check every 15 seconds
-
-        return () => clearInterval(botInterval);
-      }
-    }, [botCount, messages.length]);
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(async stream => {
       const isTimeReady = await checkSessionStatus();
@@ -164,6 +152,7 @@ function GDSessionRoom() {
         setPeers(prev => prev.filter(p => p.peerID !== id));
         setParticipants(prev => prev.filter(p => p.id !== id));
       });
+      setIsLoading(false);
     });
 
     return () => {
@@ -171,7 +160,31 @@ function GDSessionRoom() {
       localStream?.getTracks().forEach(track => track.stop());
       if (recognition) recognition.stop();
     };
-  }, [inviteLink, userName, isTranscribing, audioEnabled]);
+  }, [inviteLink, userName, isTranscribing, audioEnabled, navigate, user]);
+
+  // Bot Activity Simulation (Moved out of previous useEffect)
+  useEffect(() => {
+    if (botCount > 0) {
+      const botInterval = setInterval(() => {
+        if (messages.length > 0 && Math.random() > 0.7) {
+          const botId = Math.floor(Math.random() * botCount) + 1;
+          const botName = `AI Bot ${botId}`;
+          
+          const aiMessage = {
+            sender: botName,
+            content: `[AI Analysis] I've analyzed the current discussion. Here's a thought: We should focus on how this impacts long-term scalability. What do you think?`,
+            timestamp: new Date().toISOString(),
+            senderName: botName,
+            isAI: true
+          };
+          
+          setMessages(prev => [...prev, aiMessage]);
+        }
+      }, 15000);
+
+      return () => clearInterval(botInterval);
+    }
+  }, [botCount, messages.length]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -299,6 +312,36 @@ function GDSessionRoom() {
       setIsGeneratingMom(false);
     }
   };
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0f172a] p-6">
+        <div className="bg-slate-800 p-10 rounded-3xl shadow-2xl border border-slate-700 max-w-md w-full text-center animate-in fade-in zoom-in duration-300">
+          <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">⚠️</div>
+          <h2 className="text-2xl font-bold text-white mb-4">Cannot Join Room</h2>
+          <p className="text-slate-400 mb-8 leading-relaxed">{error}</p>
+          <button 
+            onClick={() => navigate('/dashboard')}
+            className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition-all shadow-lg"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0f172a] flex-col gap-6">
+        <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-white">Preparing your session...</h2>
+          <p className="text-slate-500 mt-2">Checking camera and microphone permissions</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-[#0f172a] text-white overflow-hidden font-sans">

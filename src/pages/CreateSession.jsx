@@ -180,27 +180,40 @@ function CreateSession() {
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              Session Created Successfully!
+              Session Ready!
             </div>
             <div className="p-4">
-              <p className="text-sm text-gray-700 mb-2">Share this invite link with participants:</p>
-              <div className="flex items-center bg-white rounded-lg border border-gray-200 p-2">
-                <code className="text-xs break-all flex-1 text-indigo-600">{inviteLink}</code>
-                <button 
-                  onClick={copyToClipboard}
-                  className="ml-2 p-1 rounded-lg bg-indigo-100 hover:bg-indigo-200 transition-colors"
-                  title="Copy to clipboard"
+              <p className="text-sm text-gray-700 mb-2 font-semibold">Share this link with participants:</p>
+              <div className="flex items-center bg-white rounded-lg border border-gray-200 p-2 mb-4 group hover:border-indigo-300 transition-all">
+                <a 
+                  href={`${window.location.origin}/session/${inviteLink}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs break-all flex-1 text-indigo-600 font-bold hover:underline"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  {`${window.location.origin}/session/${inviteLink}`}
+                </a>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/session/${inviteLink}`);
+                    alert('Full link copied!');
+                  }}
+                  className="ml-2 p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition-colors"
+                  title="Copy link"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
                   </svg>
                 </button>
               </div>
               <button
-                onClick={() => navigate(`/session/${inviteLink.split('/').pop()}`)}
-                className="w-full mt-3 py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
+                onClick={() => navigate(`/session/${inviteLink}`)}
+                className="w-full py-3 px-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all font-bold shadow-lg shadow-indigo-100 flex items-center justify-center gap-2"
               >
-                Join Session Now
+                <span>Join Meeting Now</span>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
               </button>
             </div>
           </div>
