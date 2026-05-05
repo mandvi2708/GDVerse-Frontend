@@ -284,12 +284,21 @@ function GDSessionRoom() {
         jobDescription
       });
       if (res.data.response) {
-        setMessages(prev => [...prev, { 
+        const botMsg = { 
           senderName: "AI Bot", 
           content: res.data.response, 
           timestamp: new Date(), 
           isAI: true 
-        }]);
+        };
+        setMessages(prev => [...prev, botMsg]);
+        
+        // --- Added: Text-to-Speech (TTS) ---
+        if ('speechSynthesis' in window) {
+          const utterance = new SpeechSynthesisUtterance(res.data.response);
+          utterance.rate = 1.0;
+          utterance.pitch = 1.0;
+          window.speechSynthesis.speak(utterance);
+        }
       }
     } catch (e) { console.error('AI Bot error:', e); }
   };
