@@ -29,6 +29,7 @@ function GDSessionRoom() {
   const peersRef = useRef([]); // Stores { peerID, peer, name }
   const chatContainerRef = useRef();
   const socketRef = useRef();
+  const streamRef = useRef();
 
   // Get current user info
   const userStr = localStorage.getItem('user');
