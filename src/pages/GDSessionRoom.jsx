@@ -31,6 +31,7 @@ function GDSessionRoom() {
   const [botCount, setBotCount] = useState(0);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isInterviewMode, setIsInterviewMode] = useState(false);
+  const [jobDescription, setJobDescription] = useState('');
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
@@ -65,6 +66,7 @@ function GDSessionRoom() {
         const statusRes = await api.get(`/api/sessions/join/${inviteLink}`);
         setBotCount(statusRes.data.aiCount || 0);
         setIsInterviewMode(statusRes.data.isInterviewMode || false);
+        setJobDescription(statusRes.data.jobDescription || "");
 
         // B. Get Local Media
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -82,13 +84,11 @@ function GDSessionRoom() {
         const normalizedRoomId = inviteLink.trim().toLowerCase();
 
         socket.on('connect', () => {
-          console.log('📡 [Socket] Connected:', socket.id);
           socket.emit('join-room', { roomId: normalizedRoomId, name: userName });
         });
 
         // --- Signaling Handlers ---
         socket.on('all-users', users => {
-          console.log('📡 [Signal] Existing users in room:', users);
           users.forEach(u => {
             const peer = createPeer(u.userId, socket.id, stream, u.name);
             peersRef.current[u.userId] = peer;
@@ -98,10 +98,7 @@ function GDSessionRoom() {
         });
 
         socket.on('user-joined', async ({ signal, callerId, name }) => {
-          console.log('📡 [Signal] New user joining:', name);
-          if (peersRef.current[callerId]) {
-            peersRef.current[callerId].close();
-          }
+          if (peersRef.current[callerId]) peersRef.current[callerId].close();
           const peer = addPeer(signal, callerId, stream, name);
           peersRef.current[callerId] = peer;
           setRemotePeers(prev => {
@@ -134,7 +131,6 @@ function GDSessionRoom() {
 
         setIsLoading(false);
       } catch (err) {
-        console.error('❌ [Init] Session error:', err);
         setError('Failed to initialize meeting. Please check camera permissions.');
         setIsLoading(false);
       }
@@ -276,26 +272,47 @@ function GDSessionRoom() {
     if (chatContainerRef.current) chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
   }, [messages]);
 
+  // AI Bot logic effect
   useEffect(() => {
     if (botCount > 0) {
-      const interval = setInterval(async () => {
-        if (messages.length > 0 && Math.random() > 0.7) {
-          try {
-            const res = await api.post('/api/ai/bot-response', {
-              transcript: messages.slice(-10),
-              botName: "AI Interviewer",
-              isInterviewMode,
-              jobDescription: "" // Could be fetched
-            });
+      // 1. Initial Prompt for Interview Mode
+      if (isInterviewMode && messages.length === 0) {
+        const timer = setTimeout(() => {
+          api.post('/api/ai/bot-response', {
+            transcript: [],
+            botName: "AI Interviewer",
+            isInterviewMode: true,
+            jobDescription
+          }).then(res => {
             if (res.data.response) {
               setMessages(prev => [...prev, { senderName: "AI Bot", content: res.data.response, timestamp: new Date(), isAI: true }]);
             }
-          } catch (e) { console.error(e); }
+          }).catch(console.error);
+        }, 3000);
+        return () => clearTimeout(timer);
+      }
+
+      // 2. Regular interaction interval
+      const interval = setInterval(async () => {
+        if (isInterviewMode || messages.length > 0) {
+          if (Math.random() > 0.6) {
+            try {
+              const res = await api.post('/api/ai/bot-response', {
+                transcript: messages.slice(-10),
+                botName: "AI Interviewer",
+                isInterviewMode,
+                jobDescription
+              });
+              if (res.data.response) {
+                setMessages(prev => [...prev, { senderName: "AI Bot", content: res.data.response, timestamp: new Date(), isAI: true }]);
+              }
+            } catch (e) { console.error('AI error:', e); }
+          }
         }
-      }, 30000);
+      }, 40000); // 40 second cycles
       return () => clearInterval(interval);
     }
-  }, [botCount, messages, isInterviewMode]);
+  }, [botCount, messages.length, isInterviewMode, jobDescription]);
 
   if (isLoading) return <LoadingScreen />;
   if (error) return <ErrorScreen message={error} onBack={() => navigate('/dashboard')} />;
