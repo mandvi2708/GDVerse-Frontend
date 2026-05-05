@@ -544,5 +544,3 @@ function Video({ peerID, remoteStream, name }) {
 }
 
 export default GDSessionRoom;
-
-export default GDSessionRoom;
