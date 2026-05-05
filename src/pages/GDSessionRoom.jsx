@@ -115,29 +115,32 @@ function GDSessionRoom() {
 
       socketRef.current.emit('join-room', { roomId: inviteLink, name: userName });
 
-      setParticipants([{ id: 'you', name: userName + ' (You)' }]);
-
-      socketRef.current.on('user-joined', ({ userId, name }) => {
-        console.log('User joined:', name);
-        const peer = createPeer(userId, socketRef.current.id, stream, name);
-        peersRef.current.push({ peerID: userId, peer, name });
-        setPeers(prev => [...prev, { peerID: userId, peer, remoteStream: null, name }]);
-        setParticipants(prev => [...prev, { id: userId, name }]);
+      // 1. Existing users in room
+      socketRef.current.on('all-users', (users) => {
+        console.log('Existing users:', users);
+        const peers = [];
+        users.forEach(({ userId, name }) => {
+          const peer = createPeer(userId, socketRef.current.id, stream, name);
+          peersRef.current.push({ peerID: userId, peer, name });
+          peers.push({ peerID: userId, peer, remoteStream: null, name });
+        });
+        setPeers(peers);
+        setIsLoading(false);
       });
 
+      // 2. New user joining (I wait for their signal)
+      socketRef.current.on('user-joined', ({ userId, name }) => {
+        console.log('New participant:', name);
+        const peer = addPeer(null, userId, stream, name);
+        peersRef.current.push({ peerID: userId, peer, name });
+        setPeers(prev => [...prev, { peerID: userId, peer, remoteStream: null, name }]);
+      });
+
+      // 3. Signaling
       socketRef.current.on('signal', ({ senderId, signal }) => {
         const item = peersRef.current.find(p => p.peerID === senderId);
         if (item) {
           item.peer.signal(signal);
-        } else {
-          // If we don't have this peer yet, it's because they were already in the room
-          // The backend should probably handle initial room state, but for mesh:
-          // We need the name of the sender. Let's assume the signal might include it or we get a separate event.
-          // For now, we'll use a placeholder and wait for a name update if possible, 
-          // or modify the signal to include the name.
-          const peer = addPeer(signal, senderId, stream);
-          peersRef.current.push({ peerID: senderId, peer, name: 'Joining...' });
-          setPeers(prev => [...prev, { peerID: senderId, peer, remoteStream: null, name: 'Joining...' }]);
         }
       });
 
@@ -150,17 +153,29 @@ function GDSessionRoom() {
         if (peerObj) peerObj.peer.destroy();
         peersRef.current = peersRef.current.filter(p => p.peerID !== id);
         setPeers(prev => prev.filter(p => p.peerID !== id));
-        setParticipants(prev => prev.filter(p => p.id !== id));
       });
+      
+      setIsLoading(false);
+    }).catch(err => {
+      console.error('Stream error:', err);
+      setError('Could not access media devices. Please check permissions.');
       setIsLoading(false);
     });
 
     return () => {
       socketRef.current?.disconnect();
-      localStream?.getTracks().forEach(track => track.stop());
       if (recognition) recognition.stop();
     };
-  }, [inviteLink, userName, isTranscribing, audioEnabled, navigate, user]);
+  }, [inviteLink, userName, isTranscribing, navigate, user]);
+
+  // Clean up local stream tracks on unmount
+  useEffect(() => {
+    return () => {
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [localStream]);
 
   // Bot Activity Simulation (Moved out of previous useEffect)
   useEffect(() => {
@@ -203,29 +218,31 @@ function GDSessionRoom() {
     return peer;
   };
 
-  const addPeer = (incomingSignal, callerID, stream) => {
+  const addPeer = (incomingSignal, callerID, stream, name) => {
     const peer = new Peer({ initiator: false, trickle: false, stream });
     peer.on('signal', signal => {
       socketRef.current.emit('signal', { targetId: callerID, signal });
     });
     peer.on('stream', remoteStream => {
-      setPeers(prev => prev.map(p => p.peerID === callerID ? { ...p, remoteStream } : p));
+      setPeers(prev => prev.map(p => p.peerID === callerID ? { ...p, remoteStream, name } : p));
     });
-    peer.signal(incomingSignal);
+    if (incomingSignal) peer.signal(incomingSignal);
     return peer;
   };
 
   const toggleAudio = () => {
     if (localStream) {
-      localStream.getAudioTracks()[0].enabled = !audioEnabled;
-      setAudioEnabled(!audioEnabled);
+      const enabled = !audioEnabled;
+      localStream.getAudioTracks().forEach(track => track.enabled = enabled);
+      setAudioEnabled(enabled);
     }
   };
 
   const toggleVideo = () => {
     if (localStream) {
-      localStream.getVideoTracks()[0].enabled = !videoEnabled;
-      setVideoEnabled(!videoEnabled);
+      const enabled = !videoEnabled;
+      localStream.getVideoTracks().forEach(track => track.enabled = enabled);
+      setVideoEnabled(enabled);
     }
   };
 
@@ -287,7 +304,7 @@ function GDSessionRoom() {
     if (window.confirm("Are you sure you want to leave the meeting?")) {
       localStream?.getTracks().forEach(track => track.stop());
       socketRef.current?.disconnect();
-      window.location.href = '/dashboard';
+      navigate('/dashboard');
     }
   };
 
@@ -363,7 +380,7 @@ function GDSessionRoom() {
             onClick={() => setActiveTab('participants')}
             className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all ${activeTab === 'participants' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-slate-200'}`}
           >
-            People ({participants.length})
+            People ({peers.length + 1 + botCount})
           </button>
         </div>
 
@@ -437,23 +454,23 @@ function GDSessionRoom() {
 
                   {/* Other Peers */}
                   {peers.map((p) => (
-                <div key={p.id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-700/30 border border-slate-700/50">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-sm">
-                    {p.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 overflow-hidden">
-                    <p className="text-sm font-medium truncate">{p.name}</p>
-                    <p className="text-[10px] text-slate-500">Participant</p>
-                  </div>
-                  <div className="flex gap-1">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                  </div>
+                    <div key={p.peerID} className="flex items-center gap-3 p-3 rounded-xl bg-slate-700/30 border border-slate-700/50">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-sm">
+                        {p.name ? p.name.charAt(0).toUpperCase() : '?'}
+                      </div>
+                      <div className="flex-1 overflow-hidden">
+                        <p className="text-sm font-medium truncate">{p.name || 'Joining...'}</p>
+                        <p className="text-[10px] text-slate-500">Participant</p>
+                      </div>
+                      <div className="flex gap-1">
+                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            </div>
-          )}
-        </div>
+              </div>
+            )}
+          </div>
         
         <div className="p-4 border-t border-slate-700 bg-slate-800/50">
           <button 
