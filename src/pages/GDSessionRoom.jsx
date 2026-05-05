@@ -249,9 +249,10 @@ function GDSessionRoom() {
   };
 
   const handleGenerateMOM = async () => {
+    if (isGeneratingMom) return;
     setIsGeneratingMom(true);
     try {
-      const res = await api.post(`/api/ai/generate-mom/${inviteLink}`);
+      const res = await api.post('/api/ai/mom', { sessionId: inviteLink });
       setMom(res.data.minutesOfMeeting);
       setShowMomModal(true);
     } catch (e) { alert("MOM generation failed."); }
@@ -259,9 +260,10 @@ function GDSessionRoom() {
   };
 
   const handleGetFeedback = async () => {
+    if (isGeneratingFeedback) return;
     setIsGeneratingFeedback(true);
     try {
-      const res = await api.get(`/api/ai/interview-feedback/${inviteLink}?userName=${userName}`);
+      const res = await api.post('/api/ai/feedback', { sessionId: inviteLink, userName });
       setFeedback(res.data.feedback);
       setShowFeedbackModal(true);
     } catch (e) { alert("Feedback generation failed."); }
@@ -277,7 +279,7 @@ function GDSessionRoom() {
     if (botCount === 0) return;
     
     try {
-      const res = await api.post('/api/ai/bot-response', {
+      const res = await api.post('/api/ai/interview', {
         transcript: currentMessages.slice(-10),
         botName: "AI Interviewer",
         isInterviewMode,
