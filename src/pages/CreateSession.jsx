@@ -6,7 +6,7 @@ function CreateSession() {
   const [formData, setFormData] = useState({
     date: '',
     time: '',
-    aiCount: 2,
+    aiCount: 1,
     humanCount: 2,
   });
 
