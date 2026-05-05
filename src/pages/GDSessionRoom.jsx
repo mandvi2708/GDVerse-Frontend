@@ -69,7 +69,31 @@ function GDSessionRoom() {
       }
     }
 
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+    const checkSessionStatus = async () => {
+      try {
+        const res = await api.get(`/api/sessions/join/${inviteLink}`);
+        const { date, time } = res.data;
+        const sessionDate = new Date(`${date}T${time}`);
+        const now = new Date();
+
+        if (now < sessionDate) {
+          setError(`This session is scheduled for ${date} at ${time}. Please join at that time!`);
+          return false;
+        }
+        return true;
+      } catch (err) {
+        console.error('Session check failed:', err);
+        return true; // Fallback to allow joining if API fails
+      }
+    };
+
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(async stream => {
+      const isTimeReady = await checkSessionStatus();
+      if (!isTimeReady) {
+        stream.getTracks().forEach(t => t.stop());
+        return;
+      }
+
       setLocalStream(stream);
       if (userVideo.current) userVideo.current.srcObject = stream;
 

@@ -58,7 +58,23 @@ function Dashboard() {
     fetchSessions();
   }, []);
 
-  const displaySessions = activeTab === 'mine' ? mySessions : allSessions;
+  const getSessionStatus = (date, time) => {
+    const sessionDate = new Date(`${date}T${time}`);
+    const now = new Date();
+    const diff = now - sessionDate;
+    
+    if (diff >= 0 && diff < 3600000) return 'live'; // Live for 1 hour
+    if (diff < 0) return 'upcoming';
+    return 'ended';
+  };
+
+  const ongoingSessions = allSessions.filter(s => getSessionStatus(s.date, s.time) === 'live');
+  const upcomingSessions = allSessions.filter(s => getSessionStatus(s.date, s.time) === 'upcoming');
+  const myOwnSessions = mySessions;
+
+  const displaySessions = activeTab === 'mine' 
+    ? myOwnSessions 
+    : (activeTab === 'ongoing' ? ongoingSessions : upcomingSessions);
 
   return (
     <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8 font-sans">
@@ -96,18 +112,27 @@ function Dashboard() {
         </div>
 
         {/* Tabs */}
-        <div className="flex p-1 bg-slate-200/50 rounded-2xl mb-8 w-fit">
+        <div className="flex flex-wrap p-1 bg-slate-200/50 rounded-2xl mb-8 w-fit gap-1">
           <button
             onClick={() => setActiveTab('mine')}
-            className={`px-8 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'mine' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'mine' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
           >
             My Sessions
           </button>
           <button
-            onClick={() => setActiveTab('discover')}
-            className={`px-8 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'discover' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            onClick={() => setActiveTab('ongoing')}
+            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'ongoing' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
           >
-            Discover Sessions
+            <span className="flex items-center gap-2">
+              {ongoingSessions.length > 0 && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
+              Ongoing
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveTab('upcoming')}
+            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'upcoming' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            Upcoming
           </button>
         </div>
 
@@ -120,36 +145,35 @@ function Dashboard() {
         ) : displaySessions.length === 0 ? (
           <div className="bg-white rounded-3xl shadow-sm p-16 text-center border border-slate-100">
             <div className="mx-auto w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-6 text-4xl">
-              {activeTab === 'mine' ? '📂' : '🌍'}
+              {activeTab === 'mine' ? '📂' : (activeTab === 'ongoing' ? '📡' : '⏳')}
             </div>
             <h3 className="text-2xl font-bold text-slate-800 mb-3">
-              {activeTab === 'mine' ? 'No sessions found' : 'No public sessions available'}
+              {activeTab === 'mine' ? 'No sessions found' : (activeTab === 'ongoing' ? 'No live sessions' : 'No upcoming sessions')}
             </h3>
             <p className="text-slate-500 mb-8 max-w-md mx-auto">
               {activeTab === 'mine' 
                 ? "You haven't created any sessions yet. Start by creating one to invite others." 
-                : "There are no active sessions from other participants at the moment."}
+                : "There are no sessions available in this category at the moment."}
             </p>
-            {activeTab === 'mine' && (
-              <Link 
-                to="/create-session"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-indigo-100"
-              >
-                Create First Session
-              </Link>
-            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {displaySessions.map((session) => (
               <div 
                 key={session._id}
-                className={`bg-white p-6 rounded-3xl shadow-sm transition-all duration-300 border border-slate-100 group ${
+                className={`bg-white p-6 rounded-3xl shadow-sm transition-all duration-300 border border-slate-100 group relative ${
                   hoveredCard === session._id ? 'shadow-xl shadow-slate-200/50 -translate-y-1 border-indigo-100' : ''
                 }`}
                 onMouseEnter={() => setHoveredCard(session._id)}
                 onMouseLeave={() => setHoveredCard(null)}
               >
+                {getSessionStatus(session.date, session.time) === 'live' && (
+                  <span className="absolute top-4 right-4 bg-red-100 text-red-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-ping"></span>
+                    Live Now
+                  </span>
+                )}
+
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xl">
@@ -199,12 +223,24 @@ function Dashboard() {
                 <div className="flex flex-col gap-3">
                   <Link 
                     to={`/session/${session.inviteLink}`}
-                    className="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-2xl font-bold text-center transition-all flex items-center justify-center gap-2 group-hover:bg-indigo-600"
+                    className={`w-full py-3 rounded-2xl font-bold text-center transition-all flex items-center justify-center gap-2 ${
+                      getSessionStatus(session.date, session.time) === 'upcoming' 
+                      ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+                      : 'bg-slate-900 hover:bg-slate-800 text-white group-hover:bg-indigo-600'
+                    }`}
+                    onClick={(e) => {
+                      if (getSessionStatus(session.date, session.time) === 'upcoming') {
+                        e.preventDefault();
+                        alert(`This session starts at ${session.time} on ${session.date}. Please wait!`);
+                      }
+                    }}
                   >
-                    Join Discussion
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
+                    {getSessionStatus(session.date, session.time) === 'upcoming' ? 'Waiting...' : 'Join Discussion'}
+                    {getSessionStatus(session.date, session.time) !== 'upcoming' && (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    )}
                   </Link>
                   
                   {activeTab === 'mine' && session.minutesOfMeeting && (
