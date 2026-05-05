@@ -109,30 +109,35 @@ function CreateSession() {
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm"
                 />
-                <div className="absolute right-3 top-3 text-gray-400 text-xs font-medium">
-                  MAX 2
-                </div>
               </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700 pl-1">👥 Human Participants</label>
-              <div className="relative">
+            <div className="space-y-1 flex items-end">
+              <label className="flex items-center gap-2 cursor-pointer bg-slate-100 p-3 rounded-xl border border-slate-200 w-full hover:bg-slate-200 transition-all">
                 <input
-                  type="number"
-                  name="humanCount"
-                  min="0"
-                  max="5"
-                  value={formData.humanCount}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm"
+                  type="checkbox"
+                  name="isInterviewMode"
+                  checked={formData.isInterviewMode}
+                  onChange={(e) => setFormData(prev => ({ ...prev, isInterviewMode: e.target.checked }))}
+                  className="w-5 h-5 accent-indigo-600"
                 />
-                <div className="absolute right-3 top-3 text-gray-400 text-xs font-medium">
-                  USERS
-                </div>
-              </div>
+                <span className="text-sm font-bold text-slate-700">Interview Mode</span>
+              </label>
             </div>
           </div>
+
+          {formData.isInterviewMode && (
+            <div className="space-y-1 animate-fade-in">
+              <label className="block text-sm font-medium text-gray-700 pl-1">💼 Job Description / Role</label>
+              <textarea
+                name="jobDescription"
+                value={formData.jobDescription}
+                onChange={handleChange}
+                placeholder="e.g. Senior Frontend Developer with React expertise..."
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm h-24 resize-none"
+              />
+            </div>
+          )}
 
           <div className="flex gap-3">
             <button

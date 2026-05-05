@@ -30,12 +30,15 @@ function GDSessionRoom() {
   const [activeTab, setActiveTab] = useState('chat');
   const [botCount, setBotCount] = useState(0);
   const [isTranscribing, setIsTranscribing] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [copied, setCopied] = useState(false);
-  const [showMomModal, setShowMomModal] = useState(false);
-  const [mom, setMom] = useState('');
-  const [isGeneratingMom, setIsGeneratingMom] = useState(false);
+  const [isInterviewMode, setIsInterviewMode] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedback, setFeedback] = useState('');
+  const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
+
+  // ... (inside initSession)
+  const statusRes = await api.get(`/api/sessions/join/${inviteLink}`);
+  setBotCount(statusRes.data.aiCount || 0);
+  setIsInterviewMode(statusRes.data.isInterviewMode || false);
 
   // Refs for non-reactive storage
   const socketRef = useRef();
