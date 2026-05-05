@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
+import jsPDF from 'jspdf';
 import api, { getBaseURL } from '../api';
 
 const ICE_SERVERS = {
@@ -421,7 +422,7 @@ function GDSessionRoom() {
       </div>
 
       {/* MOM Modal */}
-      {showMomModal && <MOMModal content={mom} onClose={() => setShowMomModal(false)} />}
+      {showMomModal && <MOMModal content={mom} onClose={() => setShowMomModal(false)} sessionId={inviteLink} />}
     </div>
   );
 }
@@ -504,13 +505,36 @@ function ErrorScreen({ message, onBack }) {
   );
 }
 
-function MOMModal({ content, onClose }) {
+function MOMModal({ content, onClose, sessionId }) {
+  const downloadAsPDF = () => {
+    const doc = new jsPDF();
+    const splitText = doc.splitTextToSize(content, 180);
+    doc.setFontSize(20);
+    doc.text("GDVerse Minutes of Meeting", 15, 20);
+    doc.setFontSize(10);
+    doc.text(`Session ID: ${sessionId}`, 15, 30);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 15, 35);
+    doc.line(15, 40, 195, 40);
+    doc.setFontSize(12);
+    doc.text(splitText, 15, 50);
+    doc.save(`GDVerse_MOM_${sessionId}.pdf`);
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
       <div className="bg-slate-800 rounded-3xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl border border-slate-700">
         <div className="p-8 border-b border-slate-700 flex justify-between items-center">
           <h3 className="text-2xl font-bold">AI Minutes of Meeting</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-white"><span className="material-icons">close</span></button>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={downloadAsPDF}
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-full text-xs font-bold transition-all"
+            >
+              <span className="material-icons text-sm">download</span>
+              DOWNLOAD PDF
+            </button>
+            <button onClick={onClose} className="text-slate-400 hover:text-white"><span className="material-icons">close</span></button>
+          </div>
         </div>
         <div className="p-8 overflow-y-auto flex-1 text-slate-300">
           <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed bg-slate-900/50 p-6 rounded-2xl border border-slate-700/50">{content}</pre>
