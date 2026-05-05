@@ -16,6 +16,14 @@ function CreateSession() {
   const [showSuccess, setShowSuccess] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (!user) {
+      sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
+      navigate('/login');
+    }
+  }, [navigate]);
+
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -25,10 +33,16 @@ function CreateSession() {
 
   const handleSubmit = async (e, isImmediate = false) => {
     if (e) e.preventDefault();
+    
+    // Validation for scheduled meetings
+    if (!isImmediate && (!formData.date || !formData.time)) {
+      alert("Please select both a date and time for your meeting.");
+      return;
+    }
+
     setIsCreating(true);
 
     try {
-      // AI count is now automatic: 1 for interviews, 0 for regular GD
       const payload = {
         ...formData,
         aiCount: formData.isInterviewMode ? 1 : 0,
@@ -38,7 +52,9 @@ function CreateSession() {
       setInviteLink(res.data.inviteLink);
       setShowSuccess(true);
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to create session');
+      console.error('Creation error:', err);
+      const msg = err.response?.data?.message || 'Server connection failed. Please try again.';
+      alert(msg);
     } finally {
       setIsCreating(false);
     }
