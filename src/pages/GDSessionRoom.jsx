@@ -88,7 +88,13 @@ function GDSessionRoom() {
       });
 
       socket.on('user-joined', ({ userId, name }) => {
+        if (userId === socket.id) return; // Ignore self-broadcast
+        
         console.log('📡 [Signal] New participant joined:', name);
+        // Avoid duplicate peers
+        const existing = peersRef.current.find(p => p.peerID === userId);
+        if (existing) return;
+
         const peer = addPeer(null, userId, streamRef.current, name);
         peersRef.current.push({ peerID: userId, peer, name });
         setPeers(prev => [...prev, { peerID: userId, peer, remoteStream: null, name }]);
@@ -283,8 +289,11 @@ function GDSessionRoom() {
       socketRef.current.emit('signal', { targetId: userToSignal, signal });
     });
     peer.on('stream', remoteStream => {
-      console.log(`📡 [Stream] Received remote stream from: ${name}`);
+      console.log(`📡 [Stream] SUCCESS: Received remote stream from: ${name}`);
       setPeers(prev => prev.map(p => p.peerID === userToSignal ? { ...p, remoteStream, name } : p));
+    });
+    peer.on('error', err => {
+      console.error(`❌ [Peer] Connection error with ${name}:`, err);
     });
     return peer;
   };
@@ -300,8 +309,11 @@ function GDSessionRoom() {
       socketRef.current.emit('signal', { targetId: callerID, signal });
     });
     peer.on('stream', remoteStream => {
-      console.log(`📡 [Stream] Received remote stream from (passive): ${name}`);
+      console.log(`📡 [Stream] SUCCESS: Received remote stream from (passive): ${name}`);
       setPeers(prev => prev.map(p => p.peerID === callerID ? { ...p, remoteStream, name } : p));
+    });
+    peer.on('error', err => {
+      console.error(`❌ [Peer] Connection error (passive) with ${name}:`, err);
     });
     if (incomingSignal) peer.signal(incomingSignal);
     return peer;
