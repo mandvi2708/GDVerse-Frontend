@@ -48,8 +48,18 @@ function GDSessionRoom() {
   useEffect(() => {
     if (!user) return;
     
-    socketRef.current = io(getBaseURL());
+    socketRef.current = io(getBaseURL(), {
+      transports: ['websocket', 'polling'],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+    
     const socket = socketRef.current;
+
+    // Loading timeout fallback
+    const loadingTimeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 8000);
 
     const setupSocket = async () => {
       const isTimeReady = await checkSessionStatus();
@@ -116,10 +126,21 @@ function GDSessionRoom() {
     };
     window.addEventListener('beforeunload', handleUnload);
 
+    socket.on('connect', () => {
+      console.log('📡 [Socket] Connected:', socket.id);
+      clearTimeout(loadingTimeout);
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error('❌ [Socket] Connection error:', err);
+      setIsLoading(false); // At least let them see the UI
+    });
+
     return () => {
       socket.disconnect();
       handleUnload();
       window.removeEventListener('beforeunload', handleUnload);
+      clearTimeout(loadingTimeout);
     };
   }, [inviteLink, userName, user, navigate]);
 
