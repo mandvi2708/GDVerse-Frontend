@@ -97,9 +97,20 @@ function GDSessionRoom() {
         // Existing users receive join request from newcomer
         socket.on('user-joined', async ({ signal, callerId, name }) => {
           console.log('📡 [Signal] New user joining:', name);
+          
+          // Avoid duplicate connections
+          if (peersRef.current[callerId]) {
+            console.log('📡 [Signal] Peer already exists, replacing:', name);
+            peersRef.current[callerId].close();
+          }
+
           const peer = addPeer(signal, callerId, stream, name);
           peersRef.current[callerId] = peer;
-          setRemotePeers(prev => [...prev, { userId: callerId, name, stream: null }]);
+          
+          setRemotePeers(prev => {
+            const filtered = prev.filter(p => p.userId !== callerId);
+            return [...filtered, { userId: callerId, name, stream: null }];
+          });
         });
 
         // Newcomer receives answer back from existing users
@@ -383,8 +394,13 @@ function GDSessionRoom() {
 
       {/* Main Video Section */}
       <div className="flex-1 flex flex-col relative p-6 overflow-hidden">
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
-          <div className={`grid gap-6 h-full items-center ${remotePeers.length === 0 ? 'grid-cols-1 max-w-3xl mx-auto' : 'grid-cols-1 md:grid-cols-2'}`}>
+        <div className="flex-1 overflow-y-auto custom-scrollbar flex items-center justify-center">
+          <div className={`grid gap-4 w-full h-full max-w-7xl mx-auto ${
+            remotePeers.length === 0 ? 'grid-cols-1 max-w-3xl' : 
+            remotePeers.length === 1 ? 'grid-cols-1 md:grid-cols-2' : 
+            remotePeers.length <= 3 ? 'grid-cols-2' : 
+            'grid-cols-2 lg:grid-cols-3'
+          }`}>
             <VideoTile stream={localStream} name="You" isLocal videoEnabled={videoEnabled} />
             {remotePeers.map(peer => (
               <VideoTile key={peer.userId} stream={peer.stream} name={peer.name} />
