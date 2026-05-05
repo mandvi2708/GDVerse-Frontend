@@ -261,7 +261,7 @@ function GDSessionRoom() {
   const handleGetFeedback = async () => {
     setIsGeneratingFeedback(true);
     try {
-      const res = await api.get(`/api/ai/interview-feedback/${inviteLink}`);
+      const res = await api.get(`/api/ai/interview-feedback/${inviteLink}?userName=${userName}`);
       setFeedback(res.data.feedback);
       setShowFeedbackModal(true);
     } catch (e) { alert("Feedback generation failed."); }
