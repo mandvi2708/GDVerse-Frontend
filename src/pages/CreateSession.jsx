@@ -52,9 +52,18 @@ function CreateSession() {
       setInviteLink(res.data.inviteLink);
       setShowSuccess(true);
     } catch (err) {
-      console.error('Creation error:', err);
-      const msg = err.response?.data?.message || 'Server connection failed. Please try again.';
-      alert(msg);
+      console.error('Full creation error:', err);
+      let errorMsg = 'Server connection failed. Please check your internet or try again later.';
+      
+      if (err.response) {
+        // The server responded with a status code that falls out of the range of 2xx
+        errorMsg = err.response.data?.message || `Server Error (${err.response.status}). Please try again.`;
+      } else if (err.request) {
+        // The request was made but no response was received
+        errorMsg = 'No response from server. The backend might be starting up (cold start). Please wait 30 seconds and try again.';
+      }
+
+      alert(errorMsg);
     } finally {
       setIsCreating(false);
     }
