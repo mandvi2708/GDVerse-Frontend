@@ -272,47 +272,47 @@ function GDSessionRoom() {
     if (chatContainerRef.current) chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
   }, [messages]);
 
-  // AI Bot logic effect
+  // --- 4. AI Interview Logic ---
+  const triggerBotResponse = async (currentMessages) => {
+    if (botCount === 0) return;
+    
+    try {
+      const res = await api.post('/api/ai/bot-response', {
+        transcript: currentMessages.slice(-10),
+        botName: "AI Interviewer",
+        isInterviewMode,
+        jobDescription
+      });
+      if (res.data.response) {
+        setMessages(prev => [...prev, { 
+          senderName: "AI Bot", 
+          content: res.data.response, 
+          timestamp: new Date(), 
+          isAI: true 
+        }]);
+      }
+    } catch (e) { console.error('AI Bot error:', e); }
+  };
+
+  // Initial Bot Greeting
   useEffect(() => {
-    if (botCount > 0) {
-      // 1. Initial Prompt for Interview Mode
-      if (isInterviewMode && messages.length === 0) {
-        const timer = setTimeout(() => {
-          api.post('/api/ai/bot-response', {
-            transcript: [],
-            botName: "AI Interviewer",
-            isInterviewMode: true,
-            jobDescription
-          }).then(res => {
-            if (res.data.response) {
-              setMessages(prev => [...prev, { senderName: "AI Bot", content: res.data.response, timestamp: new Date(), isAI: true }]);
-            }
-          }).catch(console.error);
-        }, 3000);
+    if (botCount > 0 && isInterviewMode && messages.length === 0) {
+      const timer = setTimeout(() => triggerBotResponse([]), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [botCount, isInterviewMode, messages.length]);
+
+  // Reactive Bot Response
+  useEffect(() => {
+    if (botCount > 0 && messages.length > 0) {
+      const lastMsg = messages[messages.length - 1];
+      // Only respond to human messages, and prevent loops
+      if (!lastMsg.isAI && lastMsg.senderName !== "AI Bot") {
+        const timer = setTimeout(() => triggerBotResponse(messages), 1500);
         return () => clearTimeout(timer);
       }
-
-      // 2. Regular interaction interval
-      const interval = setInterval(async () => {
-        if (isInterviewMode || messages.length > 0) {
-          if (Math.random() > 0.6) {
-            try {
-              const res = await api.post('/api/ai/bot-response', {
-                transcript: messages.slice(-10),
-                botName: "AI Interviewer",
-                isInterviewMode,
-                jobDescription
-              });
-              if (res.data.response) {
-                setMessages(prev => [...prev, { senderName: "AI Bot", content: res.data.response, timestamp: new Date(), isAI: true }]);
-              }
-            } catch (e) { console.error('AI error:', e); }
-          }
-        }
-      }, 40000); // 40 second cycles
-      return () => clearInterval(interval);
     }
-  }, [botCount, messages.length, isInterviewMode, jobDescription]);
+  }, [messages.length, botCount, isInterviewMode]);
 
   if (isLoading) return <LoadingScreen />;
   if (error) return <ErrorScreen message={error} onBack={() => navigate('/dashboard')} />;
