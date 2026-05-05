@@ -149,6 +149,7 @@ function GDSessionRoom() {
     if (!isLoading && userVideo.current && localStream) {
       console.log('🎥 [Media] Syncing local stream to video element');
       userVideo.current.srcObject = localStream;
+      userVideo.current.play().catch(e => console.error("Local play error:", e));
     }
   }, [isLoading, localStream]);
 
@@ -588,7 +589,14 @@ function GDSessionRoom() {
           }`}>
             {/* Local User Video */}
             <div className="relative group aspect-video rounded-2xl overflow-hidden bg-slate-800 shadow-2xl border border-slate-700 transition-all hover:scale-[1.02]">
-              <video ref={userVideo} autoPlay playsInline muted className="w-full h-full object-cover" />
+              <video 
+                ref={userVideo} 
+                autoPlay 
+                playsInline 
+                muted 
+                className="w-full h-full object-cover" 
+                style={{ transform: 'scaleX(-1)' }} 
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                 <div className="flex items-center gap-2">
                   <span className="px-2 py-1 bg-indigo-600/80 backdrop-blur-md rounded text-[10px] font-bold uppercase tracking-widest">You</span>
