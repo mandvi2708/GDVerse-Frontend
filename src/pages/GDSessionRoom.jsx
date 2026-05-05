@@ -325,10 +325,26 @@ function GDSessionRoom() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const streamRef = useRef();
+
+  useEffect(() => {
+    streamRef.current = localStream;
+  }, [localStream]);
+
   const leaveMeeting = () => {
     if (window.confirm("Are you sure you want to leave the meeting?")) {
-      localStream?.getTracks().forEach(track => track.stop());
+      // 1. Stop all tracks immediately
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => {
+          track.stop();
+          console.log(`📡 [Media] Stopped track: ${track.kind}`);
+        });
+      }
+      
+      // 2. Disconnect socket
       socketRef.current?.disconnect();
+      
+      // 3. Navigate away
       navigate('/dashboard');
     }
   };
