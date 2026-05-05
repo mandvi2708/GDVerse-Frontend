@@ -43,114 +43,48 @@ function GDSessionRoom() {
     }
   }, [user, navigate]);
 
+  // 1. Initial Socket & Room Setup (Once)
   useEffect(() => {
+    if (!user) return;
+    
     socketRef.current = io(getBaseURL());
+    const socket = socketRef.current;
 
-    // Speech Recognition Setup
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition;
-
-    if (SpeechRecognition && audioEnabled) {
-      recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = false;
-      recognition.lang = 'en-US';
-
-      recognition.onresult = (event) => {
-        const lastResultIndex = event.results.length - 1;
-        const transcript = event.results[lastResultIndex][0].transcript;
-        
-        if (transcript.trim()) {
-          socketRef.current.emit('transcript-update', {
-            roomId: inviteLink,
-            sender: userName,
-            text: transcript
-          });
-        }
-      };
-
-      recognition.onend = () => {
-        if (isTranscribing) {
-          try { recognition.start(); } catch (e) { console.error(e); }
-        }
-      };
-
-      if (isTranscribing) {
-        try { recognition.start(); } catch (e) { console.error(e); }
-      }
-    }
-
-    const checkSessionStatus = async () => {
-      try {
-        const res = await api.get(`/api/sessions/join/${inviteLink}`);
-        const { date, time, aiCount } = res.data;
-        setBotCount(aiCount || 0);
-
-        const sessionDate = new Date(`${date} ? ${date}T${time} : ${date}`);
-        // Handle malformed date/time strings if necessary, but assume standard format
-        const scheduledTime = new Date(`${date}T${time}`).getTime();
-        const now = new Date().getTime();
-
-        if (now < scheduledTime) {
-          setError(`This session is scheduled for ${date} at ${time}. Please join at that time!`);
-          setIsLoading(false);
-          return false;
-        }
-        return true;
-      } catch (err) {
-        console.error('Session check failed:', err);
-        return true;
-      }
-    };
-
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(async stream => {
+    const setupSocket = async () => {
       const isTimeReady = await checkSessionStatus();
-      if (!isTimeReady) {
-        stream.getTracks().forEach(t => t.stop());
-        return;
-      }
+      if (!isTimeReady) return;
 
-      setLocalStream(stream);
-      if (userVideo.current) userVideo.current.srcObject = stream;
+      socket.emit('join-room', { roomId: inviteLink, name: userName });
 
-      socketRef.current.emit('join-room', { roomId: inviteLink, name: userName });
-
-      // 1. Existing users in room
-      socketRef.current.on('all-users', (users) => {
+      socket.on('all-users', (users) => {
         console.log('📡 [Signal] Existing users:', users);
-        const peers = [];
+        const newPeers = [];
         users.forEach(({ userId, name }) => {
-          const peer = createPeer(userId, socketRef.current.id, stream, name);
+          const peer = createPeer(userId, socket.id, streamRef.current, name);
           peersRef.current.push({ peerID: userId, peer, name });
-          peers.push({ peerID: userId, peer, remoteStream: null, name });
+          newPeers.push({ peerID: userId, peer, remoteStream: null, name });
         });
-        setPeers(peers);
+        setPeers(newPeers);
         setIsLoading(false);
       });
 
-      // 2. New user joining (I wait for their signal)
-      socketRef.current.on('user-joined', ({ userId, name }) => {
+      socket.on('user-joined', ({ userId, name }) => {
         console.log('📡 [Signal] New participant joined:', name);
-        // We don't signal yet, we wait for their initiator signal
-        const peer = addPeer(null, userId, stream, name);
+        const peer = addPeer(null, userId, streamRef.current, name);
         peersRef.current.push({ peerID: userId, peer, name });
         setPeers(prev => [...prev, { peerID: userId, peer, remoteStream: null, name }]);
       });
 
-      // 3. Signaling
-      socketRef.current.on('signal', ({ senderId, signal }) => {
-        console.log('📡 [Signal] Received signal from:', senderId);
+      socket.on('signal', ({ senderId, signal }) => {
         const item = peersRef.current.find(p => p.peerID === senderId);
-        if (item) {
-          item.peer.signal(signal);
-        }
+        if (item) item.peer.signal(signal);
       });
 
-      socketRef.current.on('chat-message', (data) => {
+      socket.on('chat-message', (data) => {
         setMessages(prev => [...prev, data]);
       });
 
-      socketRef.current.on('user-left', id => {
+      socket.on('user-left', id => {
         console.log('📡 [Signal] Participant left:', id);
         const peerObj = peersRef.current.find(p => p.peerID === id);
         if (peerObj) {
@@ -159,28 +93,91 @@ function GDSessionRoom() {
         peersRef.current = peersRef.current.filter(p => p.peerID !== id);
         setPeers(prev => prev.filter(p => p.peerID !== id));
       });
-      
-      setIsLoading(false);
+    };
+
+    // 2. Media Initialization
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+      streamRef.current = stream;
+      setLocalStream(stream);
+      if (userVideo.current) userVideo.current.srcObject = stream;
+      setupSocket();
     }).catch(err => {
       console.error('❌ [Media] Stream error:', err);
       setError('Could not access media devices. Please check permissions.');
       setIsLoading(false);
     });
 
-    return () => {
-      socketRef.current?.disconnect();
-      if (recognition) recognition.stop();
-    };
-  }, [inviteLink, userName, isTranscribing, navigate, user]);
-
-  // Clean up local stream tracks on unmount
-  useEffect(() => {
-    return () => {
-      if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
+    // 3. Tab Closure Cleanup
+    const handleUnload = () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
       }
     };
-  }, [localStream]);
+    window.addEventListener('beforeunload', handleUnload);
+
+    return () => {
+      socket.disconnect();
+      handleUnload();
+      window.removeEventListener('beforeunload', handleUnload);
+    };
+  }, [inviteLink, userName, user, navigate]);
+
+  // 4. Transcription Lifecycle (Separate from Socket)
+  useEffect(() => {
+    if (!socketRef.current || !isTranscribing) return;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onresult = (event) => {
+      const lastResultIndex = event.results.length - 1;
+      const transcript = event.results[lastResultIndex][0].transcript;
+      if (transcript.trim()) {
+        socketRef.current.emit('transcript-update', {
+          roomId: inviteLink,
+          sender: userName,
+          text: transcript
+        });
+      }
+    };
+
+    recognition.onend = () => {
+      if (isTranscribing) {
+        try { recognition.start(); } catch (e) { /* Already started or error */ }
+      }
+    };
+
+    try { recognition.start(); } catch (e) { console.error(e); }
+
+    return () => recognition.stop();
+  }, [isTranscribing, inviteLink, userName]);
+
+  const checkSessionStatus = async () => {
+    try {
+      const res = await api.get(`/api/sessions/join/${inviteLink}`);
+      const { date, time, aiCount } = res.data;
+      setBotCount(aiCount || 0);
+
+      const scheduledTime = new Date(`${date}T${time}`).getTime();
+      const now = new Date().getTime();
+
+      if (now < scheduledTime) {
+        setError(`This session is scheduled for ${date} at ${time}. Please join at that time!`);
+        setIsLoading(false);
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.error('Session check failed:', err);
+      return true;
+    }
+  };
+
 
   // Bot Activity Simulation (Moved out of previous useEffect)
   useEffect(() => {
@@ -325,11 +322,6 @@ function GDSessionRoom() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const streamRef = useRef();
-
-  useEffect(() => {
-    streamRef.current = localStream;
-  }, [localStream]);
 
   const leaveMeeting = () => {
     if (window.confirm("Are you sure you want to leave the meeting?")) {
