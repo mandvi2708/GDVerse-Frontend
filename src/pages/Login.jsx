@@ -20,6 +20,7 @@ function Login() {
     try {
       const res = await api.post('/api/auth/login', formData);
       localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
