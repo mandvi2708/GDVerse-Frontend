@@ -69,10 +69,14 @@ function GDSessionRoom() {
       }
     }
 
+    const [botCount, setBotCount] = useState(0);
+
     const checkSessionStatus = async () => {
       try {
         const res = await api.get(`/api/sessions/join/${inviteLink}`);
-        const { date, time } = res.data;
+        const { date, time, aiCount } = res.data;
+        setBotCount(aiCount || 0);
+
         const sessionDate = new Date(`${date}T${time}`);
         const now = new Date();
 
@@ -83,9 +87,33 @@ function GDSessionRoom() {
         return true;
       } catch (err) {
         console.error('Session check failed:', err);
-        return true; // Fallback to allow joining if API fails
+        return true;
       }
     };
+
+    // Bot Activity Simulation
+    useEffect(() => {
+      if (botCount > 0) {
+        const botInterval = setInterval(() => {
+          // Only talk if there's some recent human activity to react to
+          if (messages.length > 0 && Math.random() > 0.7) {
+            const botId = Math.floor(Math.random() * botCount) + 1;
+            const botName = `AI Bot ${botId}`;
+            
+            const aiMessage = {
+              sender: botName,
+              text: `[AI Analysis] I've analyzed the current discussion. Here's a thought: We should focus on how this impacts long-term scalability. What do you think?`,
+              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              isAI: true
+            };
+            
+            setMessages(prev => [...prev, aiMessage]);
+          }
+        }, 15000); // Check every 15 seconds
+
+        return () => clearInterval(botInterval);
+      }
+    }, [botCount, messages.length]);
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(async stream => {
       const isTimeReady = await checkSessionStatus();
@@ -339,20 +367,47 @@ function GDSessionRoom() {
             </div>
           ) : (
             <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
-              {participants.map((p) => (
+                <div className="space-y-4">
+                  {/* Local User */}
+                  <div className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl border border-white/5">
+                    <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold">
+                      {userName[0]}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold text-sm">{userName} (You)</p>
+                      <p className="text-xs text-slate-400">Organizer</p>
+                    </div>
+                  </div>
+
+                  {/* AI Bots */}
+                  {Array.from({ length: botCount }).map((_, i) => (
+                    <div key={`bot-${i}`} className="flex items-center gap-3 p-3 bg-indigo-900/20 rounded-xl border border-indigo-500/10">
+                      <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-xl">
+                        🤖
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-sm text-indigo-300">AI Bot {i + 1}</p>
+                        <p className="text-xs text-indigo-400/60 font-medium uppercase tracking-tighter">Active AI Participant</p>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Other Peers */}
+                  {peers.map((p) => (
                 <div key={p.id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-700/30 border border-slate-700/50">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-sm">
                     {p.name.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 overflow-hidden">
                     <p className="text-sm font-medium truncate">{p.name}</p>
-                    <p className="text-[10px] text-slate-500">{p.id === 'you' ? 'Host' : 'Participant'}</p>
+                    <p className="text-[10px] text-slate-500">Participant</p>
                   </div>
                   <div className="flex gap-1">
                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                   </div>
                 </div>
               ))}
+            </div>
             </div>
           )}
         </div>

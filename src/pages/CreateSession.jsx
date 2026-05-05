@@ -104,13 +104,13 @@ function CreateSession() {
                   type="number"
                   name="aiCount"
                   min="0"
-                  max="5"
+                  max="2"
                   value={formData.aiCount}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm"
                 />
                 <div className="absolute right-3 top-3 text-gray-400 text-xs font-medium">
-                  BOTS
+                  MAX 2
                 </div>
               </div>
             </div>
