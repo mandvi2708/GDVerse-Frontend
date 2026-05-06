@@ -327,19 +327,19 @@ function GDSessionRoom() {
     
     try {
       const res = await api.post('/api/ai/interview', {
+        sessionId: inviteLink,
         transcript: currentMessages.slice(-10),
         botName: "AI Interviewer",
         isInterviewMode,
         jobDescription
       });
       if (res.data.response) {
-        const botMsg = { 
-          senderName: "AI Bot", 
+        // Emit AI response to the entire room so it gets saved to DB and broadcasted
+        socketRef.current.emit('chat-message', { 
+          roomId: inviteLink, 
           content: res.data.response, 
-          timestamp: new Date(), 
-          isAI: true 
-        };
-        setMessages(prev => [...prev, botMsg]);
+          senderName: "AI Bot" 
+        });
         
         // --- Added: Text-to-Speech (TTS) ---
         if ('speechSynthesis' in window) {
@@ -364,8 +364,8 @@ function GDSessionRoom() {
   useEffect(() => {
     if (botCount > 0 && messages.length > 0) {
       const lastMsg = messages[messages.length - 1];
-      // Only respond to human messages, and prevent loops
-      if (!lastMsg.isAI && lastMsg.senderName !== "AI Bot") {
+      // Only respond to human messages, and prevent loops. ONLY trigger if WE sent the message to avoid duplicate bot triggers from multiple peers.
+      if (!lastMsg.isAI && lastMsg.senderName !== "AI Bot" && lastMsg.senderId === socketRef.current?.id) {
         const timer = setTimeout(() => triggerBotResponse(messages), 1500);
         return () => clearTimeout(timer);
       }
@@ -393,7 +393,7 @@ function GDSessionRoom() {
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`flex flex-col ${msg.senderId === socketRef.current?.id ? 'items-end' : 'items-start'}`}>
                     <span className="text-[10px] text-slate-500 mb-1">{msg.senderName}</span>
-                    <div className={`max-w-[85%] px-3 py-2 rounded-2xl text-sm ${msg.isAI ? 'bg-indigo-900/40 border border-indigo-500/30' : 'bg-slate-700'}`}>
+                    <div className={`max-w-[85%] px-3 py-2 rounded-2xl text-sm ${msg.senderName === 'AI Bot' ? 'bg-indigo-900/40 border border-indigo-500/30' : 'bg-slate-700'}`}>
                       {msg.content}
                     </div>
                   </div>
