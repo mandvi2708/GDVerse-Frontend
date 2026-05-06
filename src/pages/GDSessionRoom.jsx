@@ -160,7 +160,16 @@ function GDSessionRoom() {
       if (e.candidate) socketRef.current.emit('ice-candidate', { targetId: userToSignal, candidate: e.candidate });
     };
     peer.ontrack = e => {
-      setRemotePeers(prev => prev.map(p => p.userId === userToSignal ? { ...p, stream: e.streams[0] } : p));
+      setRemotePeers(prev => prev.map(p => {
+        if (p.userId === userToSignal) {
+          const currentStream = p.stream || new MediaStream();
+          if (!currentStream.getTracks().find(t => t.id === e.track.id)) {
+            currentStream.addTrack(e.track);
+          }
+          return { ...p, stream: new MediaStream(currentStream.getTracks()) };
+        }
+        return p;
+      }));
     };
     peer.createOffer().then(offer => {
       peer.setLocalDescription(offer);
@@ -176,7 +185,16 @@ function GDSessionRoom() {
       if (e.candidate) socketRef.current.emit('ice-candidate', { targetId: callerId, candidate: e.candidate });
     };
     peer.ontrack = e => {
-      setRemotePeers(prev => prev.map(p => p.userId === callerId ? { ...p, stream: e.streams[0] } : p));
+      setRemotePeers(prev => prev.map(p => {
+        if (p.userId === callerId) {
+          const currentStream = p.stream || new MediaStream();
+          if (!currentStream.getTracks().find(t => t.id === e.track.id)) {
+            currentStream.addTrack(e.track);
+          }
+          return { ...p, stream: new MediaStream(currentStream.getTracks()) };
+        }
+        return p;
+      }));
     };
     peer.setRemoteDescription(new RTCSessionDescription(incomingSignal)).then(() => {
       peer.createAnswer().then(answer => {
@@ -399,10 +417,24 @@ function GDSessionRoom() {
 
 function VideoTile({ stream, name, isLocal, videoEnabled = true }) {
   const videoRef = useRef();
-  useEffect(() => { if (videoRef.current && stream) videoRef.current.srcObject = stream; }, [stream]);
+  
+  useEffect(() => { 
+    if (videoRef.current && stream) {
+      videoRef.current.srcObject = stream;
+      videoRef.current.volume = 1;
+      videoRef.current.play().catch(e => console.warn("Video play failed:", e));
+    } 
+  }, [stream]);
+  
   return (
     <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-800 border border-slate-700 group">
-      <video ref={videoRef} autoPlay playsInline muted={isLocal} className={`w-full h-full object-cover ${isLocal ? 'scale-x-[-1]' : ''}`} />
+      <video 
+        ref={videoRef} 
+        autoPlay 
+        playsInline 
+        muted={isLocal ? true : false} 
+        className={`w-full h-full object-cover ${isLocal ? 'scale-x-[-1]' : ''}`} 
+      />
       <div className="absolute bottom-4 left-4"><span className="px-3 py-1 bg-black/50 backdrop-blur-md rounded-full text-[10px] font-bold uppercase">{name}</span></div>
     </div>
   );

@@ -100,7 +100,7 @@ function CreateSession() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="block text-[10px] font-bold text-indigo-300 uppercase tracking-widest pl-1">Date</label>
               <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full px-3 py-3.5 rounded-xl bg-black/40 border border-white/10 focus:border-fuchsia-500/50 outline-none transition-all text-white text-sm" required />
@@ -109,16 +109,7 @@ function CreateSession() {
               <label className="block text-[10px] font-bold text-indigo-300 uppercase tracking-widest pl-1">Time</label>
               <input type="time" name="time" value={formData.time} onChange={handleChange} className="w-full px-3 py-3.5 rounded-xl bg-black/40 border border-white/10 focus:border-fuchsia-500/50 outline-none transition-all text-white text-sm" required />
             </div>
-            <div className="space-y-1.5">
-              <label className="block text-[10px] font-bold text-indigo-300 uppercase tracking-widest pl-1">Duration</label>
-              <select name="duration" value={formData.duration} onChange={handleChange} className="w-full px-2 py-3.5 rounded-xl bg-black/40 border border-white/10 focus:border-fuchsia-500/50 outline-none transition-all text-white text-sm appearance-none">
-                <option value="15 mins" className="bg-[#0f1219]">15m</option>
-                <option value="30 mins" className="bg-[#0f1219]">30m</option>
-                <option value="45 mins" className="bg-[#0f1219]">45m</option>
-                <option value="60 mins" className="bg-[#0f1219]">60m</option>
-                <option value="120 mins" className="bg-[#0f1219]">120m</option>
-              </select>
-            </div>
+
           </div>
 
           <div className="space-y-4">
