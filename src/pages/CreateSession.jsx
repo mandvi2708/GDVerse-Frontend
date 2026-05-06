@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 
 function CreateSession() {
   const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    duration: '30 mins',
     date: '',
     time: '',
     isInterviewMode: false,
@@ -78,7 +81,19 @@ function CreateSession() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Discussion Title</label>
+              <input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="e.g. Q3 Roadmap Review" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-slate-800" required />
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Description / Agenda</label>
+              <textarea name="description" value={formData.description} onChange={handleChange} placeholder="What will this session cover?" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all h-20 resize-none text-sm text-slate-800" required />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
             <div className="space-y-1">
               <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Date</label>
               <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" required />
@@ -86,6 +101,15 @@ function CreateSession() {
             <div className="space-y-1">
               <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Time</label>
               <input type="time" name="time" value={formData.time} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" required />
+            <div className="space-y-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Duration</label>
+              <select name="duration" value={formData.duration} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-slate-800">
+                <option value="15 mins">15 mins</option>
+                <option value="30 mins">30 mins</option>
+                <option value="45 mins">45 mins</option>
+                <option value="60 mins">60 mins</option>
+                <option value="120 mins">120 mins</option>
+              </select>
             </div>
           </div>
 
