@@ -1,6 +1,51 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
 
 function LandingPage() {
+  const [demoActive, setDemoActive] = useState(false);
+  const [demoMessages, setDemoMessages] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const chatEndRef = useRef(null);
+
+  const startDemo = () => {
+    setDemoActive(true);
+    setDemoMessages([]);
+    simulateAIResponse("Welcome to the GDVerse Interactive Demo! I am the AI Moderator. How would you like to test my capabilities today?");
+  };
+
+  const simulateAIResponse = (text) => {
+    setIsTyping(true);
+    setTimeout(() => {
+      setDemoMessages(prev => [...prev, { sender: 'ai', text }]);
+      setIsTyping(false);
+    }, 1500);
+  };
+
+  const handleDemoAction = (action) => {
+    let userText = "";
+    let aiResponse = "";
+    
+    if (action === 'mom') {
+      userText = "Generate the Minutes of Meeting (MOM).";
+      aiResponse = "Generating MOM...\n\n**Executive Summary:**\nThe team reviewed the Q3 roadmap and finalized the AI integration.\n\n**Action Items:**\n- Mandvi: Deploy backend to Render.\n- Team: Review dashboard analytics.";
+    } else if (action === 'interview') {
+      userText = "Act as a technical interviewer.";
+      aiResponse = "Absolutely. Let's begin the mock interview.\n\nCan you explain the difference between REST and GraphQL, and in what scenarios you would choose one over the other?";
+    } else if (action === 'feedback') {
+      userText = "Give me feedback on my performance.";
+      aiResponse = "**Participant Feedback Report:**\n\n- **Clarity:** 9/10 (Excellent articulation)\n- **Confidence:** 8/10\n- **Strengths:** Strong technical depth on React.\n- **Improvement:** Try to summarize answers more concisely.";
+    }
+
+    setDemoMessages(prev => [...prev, { sender: 'user', text: userText }]);
+    simulateAIResponse(aiResponse);
+  };
+
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [demoMessages, isTyping]);
+
   return (
     <div className="min-h-screen bg-gray-900 text-white overflow-hidden relative">
       {/* Background Elements */}
@@ -134,18 +179,86 @@ function LandingPage() {
           </div>
         </div>
 
-        {/* Demo Section */}
-        <div className="mb-32">
-          <div className="bg-gray-800/50 border border-gray-700 rounded-2xl overflow-hidden">
+        {/* Interactive Demo Section */}
+        <div className="mb-32 relative z-20">
+          <div className="bg-gray-800/50 border border-purple-500/30 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(168,85,247,0.15)] backdrop-blur-sm">
             <div className="p-8">
-              <h2 className="text-3xl font-bold mb-4">Experience GDVerse</h2>
-              <p className="text-gray-400 mb-8 max-w-2xl">See how GDVerse transforms your meetings with this interactive demo.</p>
-              <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center">
-                <button className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center hover:bg-purple-700 transition">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  </svg>
-                </button>
+              <h2 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">Experience GDVerse AI</h2>
+              <p className="text-gray-400 mb-8 max-w-2xl">Interact with our live simulation to see how GDVerse transforms discussions into actionable intelligence.</p>
+              
+              <div className="bg-[#0f1219] rounded-xl border border-gray-700 h-[450px] flex flex-col overflow-hidden relative shadow-inner">
+                {!demoActive ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black z-10">
+                    <div className="w-24 h-24 mb-6 rounded-full bg-purple-500/10 flex items-center justify-center border border-purple-500/20 animate-pulse">
+                      <svg className="w-10 h-10 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                      </svg>
+                    </div>
+                    <button 
+                      onClick={startDemo}
+                      className="px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl font-bold shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(168,85,247,0.6)]"
+                    >
+                      Initialize AI Simulation
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+                      {demoMessages.map((msg, idx) => (
+                        <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                          <div className={`max-w-[80%] p-4 rounded-2xl ${msg.sender === 'user' ? 'bg-purple-600 text-white rounded-br-none' : 'bg-gray-800 text-gray-200 border border-gray-700 rounded-bl-none'}`}>
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-xs font-bold uppercase tracking-wider opacity-70">
+                                {msg.sender === 'user' ? 'You' : 'GDVerse AI'}
+                              </span>
+                            </div>
+                            <pre className="whitespace-pre-wrap font-sans text-sm">{msg.text}</pre>
+                          </div>
+                        </div>
+                      ))}
+                      {isTyping && (
+                        <div className="flex justify-start">
+                          <div className="bg-gray-800 border border-gray-700 px-4 py-3 rounded-2xl rounded-bl-none flex items-center gap-1">
+                            <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                            <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                            <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                          </div>
+                        </div>
+                      )}
+                      <div ref={chatEndRef} />
+                    </div>
+                    
+                    <div className="p-4 bg-gray-900 border-t border-gray-800 flex gap-2 overflow-x-auto custom-scrollbar">
+                      <button 
+                        onClick={() => handleDemoAction('mom')}
+                        disabled={isTyping}
+                        className="whitespace-nowrap px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-sm text-purple-300 rounded-lg transition-colors disabled:opacity-50"
+                      >
+                        📄 Generate MOM
+                      </button>
+                      <button 
+                        onClick={() => handleDemoAction('interview')}
+                        disabled={isTyping}
+                        className="whitespace-nowrap px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-sm text-indigo-300 rounded-lg transition-colors disabled:opacity-50"
+                      >
+                        🎯 Mock Interview
+                      </button>
+                      <button 
+                        onClick={() => handleDemoAction('feedback')}
+                        disabled={isTyping}
+                        className="whitespace-nowrap px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-sm text-fuchsia-300 rounded-lg transition-colors disabled:opacity-50"
+                      >
+                        📊 Get Feedback
+                      </button>
+                      <button 
+                        onClick={() => { setDemoActive(false); setDemoMessages([]); }}
+                        className="whitespace-nowrap px-4 py-2 bg-red-900/30 hover:bg-red-900/50 border border-red-900/50 text-sm text-red-400 rounded-lg transition-colors ml-auto"
+                      >
+                        Reset Demo
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
