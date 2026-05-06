@@ -255,7 +255,10 @@ function GDSessionRoom() {
       const res = await api.post('/api/ai/mom', { sessionId: inviteLink });
       setMom(res.data.minutesOfMeeting);
       setShowMomModal(true);
-    } catch (e) { alert("MOM generation failed."); }
+    } catch (e) { 
+      console.error("MOM error:", e);
+      alert(e.response?.data?.message || e.response?.data?.error || "MOM generation failed."); 
+    }
     finally { setIsGeneratingMom(false); }
   };
 
@@ -266,7 +269,10 @@ function GDSessionRoom() {
       const res = await api.post('/api/ai/feedback', { sessionId: inviteLink, userName });
       setFeedback(res.data.feedback);
       setShowFeedbackModal(true);
-    } catch (e) { alert("Feedback generation failed."); }
+    } catch (e) { 
+      console.error("Feedback error:", e);
+      alert(e.response?.data?.message || e.response?.data?.error || "Feedback generation failed."); 
+    }
     finally { setIsGeneratingFeedback(false); }
   };
 
