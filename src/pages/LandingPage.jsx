@@ -47,18 +47,22 @@ function LandingPage() {
   }, [demoMessages, isTyping]);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white overflow-hidden relative">
+    <div className="min-h-screen bg-[#050505] text-white overflow-hidden relative selection:bg-fuchsia-500/30 font-sans">
       {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 z-0" />
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-600/10 blur-[120px]"></div>
+        <div className="absolute top-[40%] right-[-10%] w-[50%] h-[50%] rounded-full bg-fuchsia-600/10 blur-[120px]"></div>
+        <div className="absolute bottom-[-10%] left-[20%] w-[30%] h-[30%] rounded-full bg-cyan-600/10 blur-[120px]"></div>
+      </div>
       
       {/* Floating Particles */}
       {[...Array(12)].map((_, i) => (
         <div 
           key={i}
-          className="absolute rounded-full bg-purple-500/10"
+          className="absolute rounded-full bg-fuchsia-500/20 shadow-[0_0_15px_rgba(217,70,239,0.5)]"
           style={{
-            width: `${Math.random() * 8 + 2}px`,
-            height: `${Math.random() * 8 + 2}px`,
+            width: `${Math.random() * 6 + 2}px`,
+            height: `${Math.random() * 6 + 2}px`,
             top: `${Math.random() * 100}%`,
             left: `${Math.random() * 100}%`,
             animation: `float ${Math.random() * 10 + 10}s linear infinite`,
@@ -68,193 +72,178 @@ function LandingPage() {
       ))}
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-20">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-10 md:py-20">
         {/* Navigation */}
-        <nav className="flex justify-between items-center mb-24">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-purple-600 rounded-md flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <nav className="flex justify-between items-center mb-24 bg-white/5 backdrop-blur-xl border border-white/10 px-6 py-4 rounded-3xl shadow-2xl">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
               </svg>
             </div>
-            <span className="text-xl font-bold">GDVerse</span>
+            <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-fuchsia-400">GDVerse</span>
           </div>
-          {/* <div className="hidden md:flex space-x-8">
-            <Link to="/features" className="text-gray-400 hover:text-white transition">Features</Link>
-            <Link to="/pricing" className="text-gray-400 hover:text-white transition">Pricing</Link>
-            <Link to="/about" className="text-gray-400 hover:text-white transition">About</Link>
-            <Link to="/contact" className="text-gray-400 hover:text-white transition">Contact</Link>
-          </div> */}
           <div className="flex space-x-4">
-            <Link to="/login" className="px-4 py-2 text-sm font-medium text-white hover:text-purple-300 transition">Login</Link>
-            <Link to="/register" className="px-4 py-2 text-sm font-medium bg-purple-600 hover:bg-purple-700 rounded-md transition">Register</Link>
+            <Link to="/login" className="px-6 py-2.5 text-sm font-bold text-slate-300 hover:text-white transition bg-white/5 hover:bg-white/10 rounded-xl border border-white/5">Login</Link>
+            <Link to="/register" className="px-6 py-2.5 text-sm font-bold bg-gradient-to-r from-indigo-500 to-fuchsia-500 hover:from-indigo-400 hover:to-fuchsia-400 text-white rounded-xl shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all hover:scale-105">Register</Link>
           </div>
         </nav>
 
         {/* Hero Section */}
-        <div className="text-center max-w-4xl mx-auto mb-32">
-          <div className="inline-flex items-center px-4 py-2 mb-8 bg-gray-800/50 border border-gray-700 rounded-full text-purple-400 text-sm font-medium">
-            <span className="w-2 h-2 bg-purple-400 rounded-full mr-2 animate-pulse"></span>
-            AI-Powered Discussions • Now Live
+        <div className="text-center max-w-5xl mx-auto mb-32">
+          <div className="inline-flex items-center px-5 py-2 mb-10 bg-white/5 backdrop-blur-md border border-white/10 rounded-full text-fuchsia-300 text-sm font-bold shadow-inner">
+            <span className="w-2.5 h-2.5 bg-fuchsia-500 rounded-full mr-3 animate-pulse shadow-[0_0_10px_rgba(217,70,239,0.8)]"></span>
+            GDVerse Platform Phase 3 Live
           </div>
 
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-300 to-purple-600">
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-black mb-8 leading-tight tracking-tight">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-fuchsia-400">
               Professional Meetings
             </span>
             <br />
-            <span className="text-white">Reimagined</span>
+            <span className="text-white">Reimagined.</span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Experience crystal-clear audio, intelligent moderation, and real-time collaboration with AI-powered insights.
+          <p className="text-xl md:text-2xl text-slate-400 mb-12 max-w-3xl mx-auto leading-relaxed font-medium">
+            Experience crystal-clear audio, intelligent AI moderation, and real-time collaboration that transforms how teams work.
           </p>
 
-          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
-            {/* <Link 
-              to="/demo" 
-              className="relative group px-8 py-4 bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg font-bold shadow-lg hover:shadow-purple-500/30 transition-all duration-300 hover:scale-[1.02]"
-            >
-              <span className="relative z-10 flex items-center justify-center">
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Watch Demo
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
-            </Link> */}
+          <div className="flex flex-col sm:flex-row justify-center gap-6 mb-16">
             <Link 
               to="/register" 
-              className="px-8 py-4 border border-gray-700 rounded-lg font-bold hover:bg-gray-800/50 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center"
+              className="px-10 py-5 bg-gradient-to-r from-indigo-500 to-fuchsia-500 hover:from-indigo-400 hover:to-fuchsia-400 rounded-2xl font-black text-lg shadow-[0_0_30px_rgba(168,85,247,0.4)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(168,85,247,0.6)] flex items-center justify-center text-white"
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              <svg className="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              Start Free Trial
+              Deploy Your Instance
             </Link>
           </div>
-
-          {/* Trusted By Section */}
-          {/* <div className="flex flex-col items-center">
-            <p className="text-gray-500 text-sm mb-4">TRUSTED BY TEAMS AT</p>
-            <div className="flex flex-wrap justify-center gap-8 opacity-80">
-              {['Google', 'Microsoft', 'Spotify', 'Netflix', 'Slack'].map((company) => (
-                <div key={company} className="text-gray-400 font-medium">{company}</div>
-              ))}
-            </div>
-          </div> */}
         </div>
 
         {/* Feature Showcase */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
-          <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-700 hover:border-purple-500/50 transition-all group">
-            <div className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center mb-6 group-hover:bg-purple-600/30 transition">
-              <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-              </svg>
+          <div className="bg-white/5 backdrop-blur-xl p-10 rounded-[2rem] border border-white/10 hover:border-indigo-500/50 transition-all duration-500 group relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-500">
+                <span className="text-2xl">🎙️</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-white">Quantum Audio</h3>
+              <p className="text-slate-400 leading-relaxed font-medium">Studio-quality voice processing with neural noise suppression ensures perfect clarity.</p>
             </div>
-            <h3 className="text-xl font-bold mb-3">Crystal Clear Audio</h3>
-            <p className="text-gray-400">Studio-quality voice processing eliminates background noise and echo.</p>
           </div>
           
-          <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-700 hover:border-purple-500/50 transition-all group">
-            <div className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center mb-6 group-hover:bg-purple-600/30 transition">
-              <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
+          <div className="bg-white/5 backdrop-blur-xl p-10 rounded-[2rem] border border-white/10 hover:border-fuchsia-500/50 transition-all duration-500 group relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-fuchsia-500/30 group-hover:scale-110 transition-transform duration-500">
+                <span className="text-2xl">🧠</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-white">AI Moderation</h3>
+              <p className="text-slate-400 leading-relaxed font-medium">Autonomous assistants guide discussions, prevent overlaps, and maintain meeting focus.</p>
             </div>
-            <h3 className="text-xl font-bold mb-3">AI Moderation</h3>
-            <p className="text-gray-400">Smart assistants keep discussions productive and on track.</p>
           </div>
           
-          <div className="bg-gray-800/50 p-8 rounded-xl border border-gray-700 hover:border-purple-500/50 transition-all group">
-            <div className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center mb-6 group-hover:bg-purple-600/30 transition">
-              <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
+          <div className="bg-white/5 backdrop-blur-xl p-10 rounded-[2rem] border border-white/10 hover:border-cyan-500/50 transition-all duration-500 group relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-emerald-500 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-cyan-500/30 group-hover:scale-110 transition-transform duration-500">
+                <span className="text-2xl">📊</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-white">Neural Insights</h3>
+              <p className="text-slate-400 leading-relaxed font-medium">Real-time analytical feedback translates raw conversations into structured intelligence.</p>
             </div>
-            <h3 className="text-xl font-bold mb-3">Real-Time Insights</h3>
-            <p className="text-gray-400">Get actionable feedback and analytics during your meetings.</p>
           </div>
         </div>
 
         {/* Interactive Demo Section */}
         <div className="mb-32 relative z-20">
-          <div className="bg-gray-800/50 border border-purple-500/30 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(168,85,247,0.15)] backdrop-blur-sm">
-            <div className="p-8">
-              <h2 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">Experience GDVerse AI</h2>
-              <p className="text-gray-400 mb-8 max-w-2xl">Interact with our live simulation to see how GDVerse transforms discussions into actionable intelligence.</p>
+          <div className="bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden shadow-[0_0_50px_rgba(168,85,247,0.15)] backdrop-blur-xl">
+            <div className="p-10 md:p-14">
+              <div className="text-center mb-10">
+                <h2 className="text-4xl md:text-5xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-fuchsia-400 to-rose-400">Experience GDVerse AI</h2>
+                <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">Interact with our live simulation matrix to see how GDVerse transforms unstructured discussions into actionable intelligence.</p>
+              </div>
               
-              <div className="bg-[#0f1219] rounded-xl border border-gray-700 h-[450px] flex flex-col overflow-hidden relative shadow-inner">
+              <div className="bg-[#0a0c10] rounded-3xl border border-white/10 h-[500px] flex flex-col overflow-hidden relative shadow-2xl">
+                {/* Window Controls */}
+                <div className="h-10 bg-white/5 border-b border-white/5 flex items-center px-4 gap-2">
+                  <div className="w-3 h-3 rounded-full bg-rose-500/80"></div>
+                  <div className="w-3 h-3 rounded-full bg-amber-500/80"></div>
+                  <div className="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+                  <div className="ml-4 text-xs font-mono text-slate-500">gdverse-ai-terminal</div>
+                </div>
+
                 {!demoActive ? (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black z-10">
-                    <div className="w-24 h-24 mb-6 rounded-full bg-purple-500/10 flex items-center justify-center border border-purple-500/20 animate-pulse">
-                      <svg className="w-10 h-10 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                      </svg>
+                  <div className="absolute inset-0 top-10 flex flex-col items-center justify-center bg-gradient-to-b from-transparent to-indigo-900/10 z-10">
+                    <div className="relative mb-8">
+                      <div className="absolute inset-0 bg-fuchsia-500/30 rounded-full blur-xl animate-pulse"></div>
+                      <div className="w-28 h-28 rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center relative z-10 shadow-[0_0_30px_rgba(217,70,239,0.5)]">
+                        <span className="text-5xl">🤖</span>
+                      </div>
                     </div>
                     <button 
                       onClick={startDemo}
-                      className="px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl font-bold shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(168,85,247,0.6)]"
+                      className="px-10 py-4 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-2xl font-bold backdrop-blur-md transition-all hover:scale-105 hover:border-fuchsia-500/50 shadow-lg"
                     >
-                      Initialize AI Simulation
+                      Initialize AI Matrix
                     </button>
                   </div>
                 ) : (
                   <>
-                    <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 custom-scrollbar bg-gradient-to-b from-transparent to-fuchsia-900/5">
                       {demoMessages.map((msg, idx) => (
-                        <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                          <div className={`max-w-[80%] p-4 rounded-2xl ${msg.sender === 'user' ? 'bg-purple-600 text-white rounded-br-none' : 'bg-gray-800 text-gray-200 border border-gray-700 rounded-bl-none'}`}>
+                        <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
+                          <div className={`max-w-[85%] p-5 rounded-3xl shadow-lg ${msg.sender === 'user' ? 'bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white rounded-br-sm' : 'bg-white/10 backdrop-blur-md text-slate-200 border border-white/10 rounded-bl-sm'}`}>
                             <div className="flex items-center gap-2 mb-2">
-                              <span className="text-xs font-bold uppercase tracking-wider opacity-70">
-                                {msg.sender === 'user' ? 'You' : 'GDVerse AI'}
+                              <span className="text-[10px] font-black uppercase tracking-widest text-white/50">
+                                {msg.sender === 'user' ? 'GUEST USER' : 'GDVERSE OVERSEER'}
                               </span>
                             </div>
-                            <pre className="whitespace-pre-wrap font-sans text-sm">{msg.text}</pre>
+                            <pre className="whitespace-pre-wrap font-sans text-[15px] leading-relaxed">{msg.text}</pre>
                           </div>
                         </div>
                       ))}
                       {isTyping && (
                         <div className="flex justify-start">
-                          <div className="bg-gray-800 border border-gray-700 px-4 py-3 rounded-2xl rounded-bl-none flex items-center gap-1">
-                            <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                            <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                            <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                          <div className="bg-white/10 backdrop-blur-md border border-white/10 px-5 py-4 rounded-3xl rounded-bl-sm flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 bg-fuchsia-400 rounded-full animate-bounce shadow-[0_0_10px_rgba(217,70,239,0.8)]" style={{ animationDelay: '0ms' }}></span>
+                            <span className="w-2.5 h-2.5 bg-fuchsia-400 rounded-full animate-bounce shadow-[0_0_10px_rgba(217,70,239,0.8)]" style={{ animationDelay: '150ms' }}></span>
+                            <span className="w-2.5 h-2.5 bg-fuchsia-400 rounded-full animate-bounce shadow-[0_0_10px_rgba(217,70,239,0.8)]" style={{ animationDelay: '300ms' }}></span>
                           </div>
                         </div>
                       )}
                       <div ref={chatEndRef} />
                     </div>
                     
-                    <div className="p-4 bg-gray-900 border-t border-gray-800 flex gap-2 overflow-x-auto custom-scrollbar">
+                    <div className="p-5 bg-[#050505]/80 backdrop-blur-xl border-t border-white/10 flex flex-wrap gap-3">
                       <button 
                         onClick={() => handleDemoAction('mom')}
                         disabled={isTyping}
-                        className="whitespace-nowrap px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-sm text-purple-300 rounded-lg transition-colors disabled:opacity-50"
+                        className="flex-1 md:flex-none px-5 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-bold text-cyan-300 rounded-xl transition-all hover:-translate-y-0.5 disabled:opacity-50"
                       >
                         📄 Generate MOM
                       </button>
                       <button 
                         onClick={() => handleDemoAction('interview')}
                         disabled={isTyping}
-                        className="whitespace-nowrap px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-sm text-indigo-300 rounded-lg transition-colors disabled:opacity-50"
+                        className="flex-1 md:flex-none px-5 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-bold text-fuchsia-300 rounded-xl transition-all hover:-translate-y-0.5 disabled:opacity-50"
                       >
                         🎯 Mock Interview
                       </button>
                       <button 
                         onClick={() => handleDemoAction('feedback')}
                         disabled={isTyping}
-                        className="whitespace-nowrap px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-sm text-fuchsia-300 rounded-lg transition-colors disabled:opacity-50"
+                        className="flex-1 md:flex-none px-5 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-bold text-amber-300 rounded-xl transition-all hover:-translate-y-0.5 disabled:opacity-50"
                       >
                         📊 Get Feedback
                       </button>
                       <button 
                         onClick={() => { setDemoActive(false); setDemoMessages([]); }}
-                        className="whitespace-nowrap px-4 py-2 bg-red-900/30 hover:bg-red-900/50 border border-red-900/50 text-sm text-red-400 rounded-lg transition-colors ml-auto"
+                        className="flex-1 md:flex-none px-5 py-3 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-sm font-bold text-rose-400 rounded-xl transition-all md:ml-auto hover:-translate-y-0.5"
                       >
-                        Reset Demo
+                        Reset Matrix
                       </button>
                     </div>
                   </>
@@ -265,124 +254,46 @@ function LandingPage() {
         </div>
 
         {/* CTA Section */}
-        <div className="text-center bg-gradient-to-r from-purple-900/40 to-gray-900/40 p-12 rounded-2xl border border-gray-700 mb-20">
-          <h2 className="text-3xl font-bold mb-6">Ready to Transform Your Meetings?</h2>
-          <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">Join thousands of professionals who communicate better with GDVerse.</p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link 
-              to="/register" 
-              className="px-8 py-4 bg-purple-600 hover:bg-purple-700 rounded-lg font-bold transition-all duration-300 hover:scale-[1.02]"
-            >
-              Start Free Trial
-            </Link>
-            <Link 
-              to="/contact" 
-              className="px-8 py-4 border border-gray-700 rounded-lg font-bold hover:bg-gray-800/50 transition-all duration-300 hover:scale-[1.02]"
-            >
-              Contact Us!
-            </Link>
+        <div className="text-center relative overflow-hidden p-16 rounded-[3rem] border border-white/10 mb-20 shadow-2xl bg-black">
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/20 to-fuchsia-600/20 z-0"></div>
+          <div className="relative z-10">
+            <h2 className="text-5xl font-black mb-6 text-white tracking-tight">Ready to Enter the GDVerse?</h2>
+            <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto font-medium">Join thousands of professionals scaling their communication with intelligent nodes.</p>
+            <div className="flex flex-col sm:flex-row justify-center gap-6">
+              <Link 
+                to="/register" 
+                className="px-10 py-5 bg-white text-black hover:bg-slate-200 rounded-2xl font-black text-lg transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+              >
+                Initialize Account
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Footer - Enhanced Version */}
-<footer className="bg-gray-900/70 border-t border-gray-800 py-12 backdrop-blur-sm">
-  <div className="max-w-7xl mx-auto px-6">
-    <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
-      {/* Logo and Description */}
-      <div className="md:col-span-2">
-        <div className="flex items-center space-x-2 mb-4">
-          <div className="w-8 h-8 bg-purple-600 rounded-md flex items-center justify-center transform hover:rotate-12 transition-transform">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-            </svg>
+      {/* Footer */}
+      <footer className="bg-black/50 border-t border-white/5 py-16 backdrop-blur-xl relative z-10">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex items-center space-x-3 mb-8 md:mb-0">
+              <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center border border-white/10">
+                <span className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-fuchsia-400">G</span>
+              </div>
+              <span className="text-lg font-bold text-white">GDVerse</span>
+            </div>
+            
+            <p className="text-slate-500 text-sm font-medium">© {new Date().getFullYear()} GDVerse Protocol. All rights reserved.</p>
           </div>
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-purple-600">GDVerse</span>
         </div>
-        <p className="text-gray-400 text-sm mb-4">The future of professional communication powered by AI.</p>
-        
-        {/* Newsletter Subscription */}
-        <div className="mt-6">
-          <h4 className="text-gray-300 font-medium mb-3">Stay Updated</h4>
-          <div className="flex">
-            <input 
-              type="email" 
-              placeholder="Your email" 
-              className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:ring-1 focus:ring-purple-500 text-sm w-full text-white placeholder-gray-500"
-            />
-            <button className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-r-lg text-sm font-medium transition-colors">
-              Subscribe
-            </button>
-          </div>
-          <p className="text-gray-500 text-xs mt-2">We'll never spam you. Unsubscribe anytime.</p>
-        </div>
-      </div>
-      
-      
-    </div>
-    
-    {/* Bottom Section */}
-    <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
-      <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 mb-4 md:mb-0">
-        <p className="text-gray-500 text-sm">© {new Date().getFullYear()} GDVerse. All rights reserved.</p>
-        <div className="hidden md:block w-px h-4 bg-gray-700"></div>
-        <div className="flex space-x-4">
-          <Link to="/sitemap" className="text-gray-500 hover:text-gray-300 transition text-sm">Sitemap</Link>
-          <Link to="/cookies" className="text-gray-500 hover:text-gray-300 transition text-sm">Cookies</Link>
-          <Link to="/accessibility" className="text-gray-500 hover:text-gray-300 transition text-sm">Accessibility</Link>
-        </div>
-      </div>
-      
-      {/* Social Links with Hover Effects */}
-      <div className="flex space-x-6">
-        {[
-          { 
-            name: 'Twitter',
-            icon: <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />,
-            color: 'hover:text-blue-400'
-          },
-          { 
-            name: 'LinkedIn',
-            icon: <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />,
-            color: 'hover:text-blue-500'
-          },
-          { 
-            name: 'GitHub',
-            icon: <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />,
-            color: 'hover:text-gray-300'
-          },
-          { 
-            name: 'Discord',
-            icon: <path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />,
-            color: 'hover:text-indigo-400'
-          }
-        ].map((social) => (
-          <Link 
-            key={social.name}
-            to="#" 
-            className={`text-gray-500 transition-colors ${social.color} relative group`}
-            aria-label={social.name}
-          >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              {social.icon}
-            </svg>
-            <span className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
-              {social.name}
-            </span>
-          </Link>
-        ))}
-      </div>
-    </div>
-  </div>
-</footer>
+      </footer>
 
       {/* Floating Animation Styles */}
-    <style jsx="true" global="true">{`
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-  }
-`}</style>
+      <style jsx="true" global="true">{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) scale(1); }
+          50% { transform: translateY(-30px) scale(1.1); }
+        }
+      `}</style>
     </div>
   );
 }
