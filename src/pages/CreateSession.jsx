@@ -37,8 +37,17 @@ function CreateSession() {
   const handleSubmit = async (e, isImmediate = false) => {
     if (e) e.preventDefault();
     
-    // Validation for scheduled meetings
-    if (!isImmediate && (!formData.date || !formData.time)) {
+    let payloadDate = formData.date;
+    let payloadTime = formData.time;
+
+    if (isImmediate) {
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      payloadDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+      payloadTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    }
+
+    if (!isImmediate && (!payloadDate || !payloadTime)) {
       alert("Please select both a date and time for your meeting.");
       return;
     }
@@ -48,6 +57,8 @@ function CreateSession() {
     try {
       const payload = {
         ...formData,
+        date: payloadDate,
+        time: payloadTime,
         aiCount: formData.isInterviewMode ? 1 : 0,
         isImmediate
       };

@@ -65,7 +65,20 @@ function GDSessionRoom() {
       try {
         // A. Check Session Validity
         const statusRes = await api.get(`/api/sessions/join/${inviteLink}`);
-        setBotCount(statusRes.data.aiCount || 0);
+        const sessionData = statusRes.data;
+
+        // Enforce Scheduling Lock
+        if (!sessionData.isImmediate) {
+           const sessionDate = new Date(`${sessionData.date}T${sessionData.time}`);
+           const now = new Date();
+           if (now < sessionDate) { 
+             setError(`This session is scheduled for ${sessionData.date} at ${sessionData.time}. Please wait until the scheduled time to join.`);
+             setIsLoading(false);
+             return;
+           }
+        }
+
+        setBotCount(sessionData.aiCount || 0);
         setIsInterviewMode(statusRes.data.isInterviewMode || false);
         setJobDescription(statusRes.data.jobDescription || "");
 
