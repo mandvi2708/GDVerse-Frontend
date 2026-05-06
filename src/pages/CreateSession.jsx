@@ -37,6 +37,11 @@ function CreateSession() {
   const handleSubmit = async (e, isImmediate = false) => {
     if (e) e.preventDefault();
     
+    if (!formData.title.trim() || !formData.description.trim()) {
+      alert("Please provide both a discussion title and a description.");
+      return;
+    }
+    
     let payloadDate = formData.date;
     let payloadTime = formData.time;
 
