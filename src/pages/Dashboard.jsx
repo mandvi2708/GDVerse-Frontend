@@ -77,21 +77,27 @@ function Dashboard() {
     : (activeTab === 'ongoing' ? ongoingSessions : upcomingSessions);
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8 font-sans">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-[#050505] text-white p-4 md:p-8 font-sans selection:bg-fuchsia-500/30">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-indigo-600/10 blur-[120px]"></div>
+        <div className="absolute top-[40%] -right-[10%] w-[40%] h-[40%] rounded-full bg-fuchsia-600/10 blur-[120px]"></div>
+        <div className="absolute -bottom-[20%] left-[20%] w-[60%] h-[50%] rounded-full bg-cyan-600/5 blur-[120px]"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6 backdrop-blur-sm bg-white/5 p-6 rounded-3xl border border-white/10 shadow-2xl">
           <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
-              GD<span className="text-indigo-600">Verse</span> Dashboard
+            <h1 className="text-3xl md:text-5xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-fuchsia-400 to-rose-400">
+              GDVerse Hub
             </h1>
-            <p className="text-slate-500 mt-2 font-medium">Connect, Discuss, and Analyze with AI</p>
+            <p className="text-slate-400 mt-2 font-medium">Connect, Discuss, and Analyze with AI intelligence.</p>
           </div>
           
-          <div className="flex gap-3 w-full md:w-auto">
+          <div className="flex gap-4 w-full md:w-auto">
             <Link 
               to="/create-session"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl shadow-lg shadow-indigo-200 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2 flex-1 md:flex-none font-bold"
+              className="bg-gradient-to-r from-indigo-500 to-fuchsia-500 hover:from-indigo-400 hover:to-fuchsia-400 text-white px-8 py-3.5 rounded-2xl shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] flex items-center justify-center gap-2 flex-1 md:flex-none font-bold"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
@@ -101,36 +107,33 @@ function Dashboard() {
             
             <button
               onClick={handleLogout}
-              className="bg-white hover:bg-slate-50 text-slate-600 px-6 py-3 rounded-xl shadow-sm border border-slate-200 transition-all flex items-center justify-center gap-2 font-semibold"
+              className="bg-white/5 hover:bg-white/10 text-white px-6 py-3.5 rounded-2xl shadow-sm border border-white/10 transition-all flex items-center justify-center gap-2 font-semibold hover:-translate-y-1"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
               <span className="hidden md:inline">Sign Out</span>
             </button>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex flex-wrap p-1 bg-slate-200/50 rounded-2xl mb-8 w-fit gap-1">
+        <div className="flex flex-wrap p-1.5 bg-white/5 backdrop-blur-md rounded-2xl mb-10 w-fit gap-2 border border-white/5 shadow-xl">
           <button
             onClick={() => setActiveTab('mine')}
-            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'mine' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'mine' ? 'bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
           >
             My Sessions
           </button>
           <button
             onClick={() => setActiveTab('ongoing')}
-            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'ongoing' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'ongoing' ? 'bg-gradient-to-r from-rose-500 to-orange-500 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
           >
             <span className="flex items-center gap-2">
-              {ongoingSessions.length > 0 && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
+              {ongoingSessions.length > 0 && <span className="w-2.5 h-2.5 rounded-full bg-white animate-pulse shadow-[0_0_10px_rgba(255,255,255,0.8)]"></span>}
               Ongoing
             </span>
           </button>
           <button
             onClick={() => setActiveTab('upcoming')}
-            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'upcoming' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            className={`px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'upcoming' ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
           >
             Upcoming
           </button>
@@ -138,22 +141,26 @@ function Dashboard() {
 
         {/* Content */}
         {loading ? (
-          <div className="flex flex-col justify-center items-center h-80 gap-4">
-            <div className="animate-spin rounded-full h-14 w-14 border-4 border-slate-200 border-t-indigo-600"></div>
-            <p className="text-slate-400 font-medium animate-pulse">Syncing sessions...</p>
+          <div className="flex flex-col justify-center items-center h-80 gap-6">
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full blur-xl bg-indigo-500/30 animate-pulse"></div>
+              <div className="animate-spin rounded-full h-16 w-16 border-4 border-white/10 border-t-fuchsia-500 relative z-10"></div>
+            </div>
+            <p className="text-slate-400 font-medium animate-pulse tracking-widest uppercase text-sm">Synchronizing Matrix...</p>
           </div>
         ) : displaySessions.length === 0 ? (
-          <div className="bg-white rounded-3xl shadow-sm p-16 text-center border border-slate-100">
-            <div className="mx-auto w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-6 text-4xl">
-              {activeTab === 'mine' ? '📂' : (activeTab === 'ongoing' ? '📡' : '⏳')}
+          <div className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] shadow-2xl p-20 text-center border border-white/10 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-fuchsia-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+            <div className="mx-auto w-28 h-28 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mb-8 text-5xl shadow-[0_0_30px_rgba(255,255,255,0.05)]">
+              {activeTab === 'mine' ? '🌌' : (activeTab === 'ongoing' ? '📡' : '⏳')}
             </div>
-            <h3 className="text-2xl font-bold text-slate-800 mb-3">
-              {activeTab === 'mine' ? 'No sessions found' : (activeTab === 'ongoing' ? 'No live sessions' : 'No upcoming sessions')}
+            <h3 className="text-3xl font-bold text-white mb-4 tracking-tight">
+              {activeTab === 'mine' ? 'The Void is Empty' : (activeTab === 'ongoing' ? 'No Live Transmissions' : 'No Future Events')}
             </h3>
-            <p className="text-slate-500 mb-8 max-w-md mx-auto">
+            <p className="text-slate-400 mb-8 max-w-md mx-auto text-lg">
               {activeTab === 'mine' 
-                ? "You haven't created any sessions yet. Start by creating one to invite others." 
-                : "There are no sessions available in this category at the moment."}
+                ? "You haven't initiated any sessions yet. Spark a new discussion to populate your universe." 
+                : "There are no sessions available in this sector at the moment."}
             </p>
           </div>
         ) : (
@@ -161,107 +168,115 @@ function Dashboard() {
             {displaySessions.map((session) => (
               <div 
                 key={session._id}
-                className={`bg-white p-6 rounded-3xl shadow-sm transition-all duration-300 border border-slate-100 group relative ${
-                  hoveredCard === session._id ? 'shadow-xl shadow-slate-200/50 -translate-y-1 border-indigo-100' : ''
+                className={`bg-white/5 backdrop-blur-xl p-8 rounded-[2rem] shadow-2xl transition-all duration-500 border border-white/10 group relative overflow-hidden ${
+                  hoveredCard === session._id ? '-translate-y-2 shadow-[0_20px_40px_-15px_rgba(168,85,247,0.3)] border-fuchsia-500/30' : ''
                 }`}
                 onMouseEnter={() => setHoveredCard(session._id)}
                 onMouseLeave={() => setHoveredCard(null)}
               >
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-fuchsia-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
                 {getSessionStatus(session.date, session.time) === 'live' && (
-                  <span className="absolute top-4 right-4 bg-red-100 text-red-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-ping"></span>
-                    Live Now
-                  </span>
+                  <div className="absolute top-0 right-0 bg-gradient-to-bl from-rose-500 to-orange-500 text-white px-5 py-2 rounded-bl-2xl rounded-tr-[2rem] text-xs font-black uppercase tracking-widest flex items-center gap-2 shadow-lg">
+                    <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                    Live
+                  </div>
                 )}
 
-                <div className="flex justify-between items-start mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xl">
-                      🚀
+                <div className="relative z-10">
+                  <div className="flex justify-between items-start mb-8">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center text-xl shadow-lg shadow-indigo-500/30">
+                        {session.isInterviewMode ? '🎯' : '🚀'}
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-bold text-white truncate max-w-[180px]" title={session.title || session.inviteLink}>
+                          {session.title || session.inviteLink}
+                        </h2>
+                        <p className="text-sm text-indigo-300 font-medium mt-0.5">
+                          Creator: <span className="text-white/80">{session.creator?.name || 'Unknown'}</span>
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="text-lg font-bold text-slate-800 truncate max-w-[200px]" title={session.title || session.inviteLink}>
-                        {session.title || session.inviteLink}
-                      </h2>
-                      <p className="text-xs text-slate-400 font-medium italic">
-                        By {session.creator?.name || 'Unknown'}
-                      </p>
-                    </div>
-                  </div>
-                  {activeTab === 'mine' && (
-                    <button
-                      onClick={() => handleDelete(session._id)}
-                      disabled={deletingId === session._id}
-                      className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all"
-                    >
-                      {deletingId === session._id ? '...' : '✕'}
-                    </button>
-                  )}
-                </div>
-
-                <div className="space-y-3 mb-6">
-                  {session.description && (
-                    <p className="text-sm text-slate-500 line-clamp-2 px-1">
-                      {session.description}
-                    </p>
-                  )}
-                  
-                  <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50/50">
-                    <div className="flex items-center gap-2">
-                      <span className="text-slate-400">📅</span>
-                      <span className="text-sm font-semibold text-slate-600">{session.date}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-slate-400">⏰</span>
-                      <span className="text-sm font-semibold text-slate-600">
-                        {session.time} <span className="text-slate-400 text-xs ml-1">({session.duration || '30 mins'})</span>
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 px-3 py-1">
-                    <span className="text-slate-400 text-sm">👥</span>
-                    <div className="flex gap-2">
-                      <span className="px-2 py-0.5 rounded-md bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider">{session.aiCount} AI BOTS</span>
-                      <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-600 text-[10px] font-bold uppercase tracking-wider">{session.humanCount} HUMANS</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  <Link 
-                    to={`/session/${session.inviteLink}`}
-                    className={`w-full py-3 rounded-2xl font-bold text-center transition-all flex items-center justify-center gap-2 ${
-                      getSessionStatus(session.date, session.time) === 'upcoming' 
-                      ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
-                      : 'bg-slate-900 hover:bg-slate-800 text-white group-hover:bg-indigo-600'
-                    }`}
-                    onClick={(e) => {
-                      if (getSessionStatus(session.date, session.time) === 'upcoming') {
-                        e.preventDefault();
-                        alert(`This session starts at ${session.time} on ${session.date}. Please wait!`);
-                      }
-                    }}
-                  >
-                    {getSessionStatus(session.date, session.time) === 'upcoming' ? 'Waiting...' : 'Join Discussion'}
-                    {getSessionStatus(session.date, session.time) !== 'upcoming' && (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
+                    {activeTab === 'mine' && (
+                      <button
+                        onClick={() => handleDelete(session._id)}
+                        disabled={deletingId === session._id}
+                        className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-rose-500/20 hover:text-rose-400 transition-all border border-white/5"
+                      >
+                        {deletingId === session._id ? '...' : '✕'}
+                      </button>
                     )}
-                  </Link>
-                  
-                  {activeTab === 'mine' && session.minutesOfMeeting && (
-                    <button 
-                      onClick={() => {
-                        setSelectedMom(session.minutesOfMeeting);
-                        setShowMomModal(true);
+                  </div>
+
+                  <div className="space-y-4 mb-8">
+                    {session.description && (
+                      <p className="text-sm text-slate-300 line-clamp-2 leading-relaxed">
+                        {session.description}
+                      </p>
+                    )}
+                    
+                    <div className="flex items-center justify-between p-4 rounded-2xl bg-black/20 border border-white/5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-indigo-400 text-sm">📅</div>
+                        <span className="text-sm font-bold text-white">{session.date}</span>
+                      </div>
+                      <div className="w-px h-8 bg-white/10"></div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-fuchsia-400 text-sm">⏰</div>
+                        <span className="text-sm font-bold text-white">
+                          {session.time} <span className="text-slate-400 text-xs font-normal ml-1">({session.duration || '30m'})</span>
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 flex items-center justify-center gap-2 p-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+                        <span className="text-lg">🤖</span>
+                        <span className="text-xs font-bold uppercase tracking-wider">{session.aiCount} BOTS</span>
+                      </div>
+                      <div className="flex-1 flex items-center justify-center gap-2 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                        <span className="text-lg">👥</span>
+                        <span className="text-xs font-bold uppercase tracking-wider">{session.humanCount} HUMANS</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <Link 
+                      to={`/session/${session.inviteLink}`}
+                      className={`w-full py-4 rounded-2xl font-bold text-center transition-all flex items-center justify-center gap-2 ${
+                        getSessionStatus(session.date, session.time) === 'upcoming' 
+                        ? 'bg-white/5 text-slate-500 cursor-not-allowed border border-white/5' 
+                        : 'bg-white text-black hover:bg-indigo-50 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]'
+                      }`}
+                      onClick={(e) => {
+                        if (getSessionStatus(session.date, session.time) === 'upcoming') {
+                          e.preventDefault();
+                          alert(`This session starts at ${session.time} on ${session.date}. Please wait!`);
+                        }
                       }}
-                      className="w-full bg-white border border-slate-200 text-slate-600 py-3 rounded-2xl font-bold transition-all hover:bg-slate-50 flex items-center justify-center gap-2"
                     >
-                      📄 View AI Summary
-                    </button>
-                  )}
+                      {getSessionStatus(session.date, session.time) === 'upcoming' ? 'Awaiting Launch...' : 'Enter Matrix'}
+                      {getSessionStatus(session.date, session.time) !== 'upcoming' && (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </Link>
+                    
+                    {activeTab === 'mine' && session.minutesOfMeeting && (
+                      <button 
+                        onClick={() => {
+                          setSelectedMom(session.minutesOfMeeting);
+                          setShowMomModal(true);
+                        }}
+                        className="w-full bg-white/5 border border-white/10 text-white py-4 rounded-2xl font-bold transition-all hover:bg-white/10 flex items-center justify-center gap-2 hover:border-white/20"
+                      >
+                        <span className="text-fuchsia-400">📄</span> Read AI Analysis
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -271,38 +286,41 @@ function Dashboard() {
 
       {/* MOM Modal */}
       {showMomModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
-          <div className="bg-white rounded-[2rem] w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-slate-100 animate-in fade-in zoom-in duration-300">
-            <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-              <div>
-                <h3 className="text-2xl font-extrabold text-slate-900">AI Minutes of Meeting</h3>
-                <p className="text-sm text-slate-500 mt-1">Generated discussion summary</p>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xl">
+          <div className="bg-[#0f1219] rounded-[2.5rem] w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-white/10 animate-in fade-in zoom-in duration-300">
+            <div className="p-8 border-b border-white/10 flex justify-between items-center relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-fuchsia-500/10 pointer-events-none"></div>
+              <div className="relative z-10">
+                <h3 className="text-3xl font-black text-white flex items-center gap-3">
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-fuchsia-400">AI Analysis Report</span>
+                </h3>
+                <p className="text-sm text-indigo-300 mt-2 font-medium tracking-wide uppercase">Extracted from session data</p>
               </div>
               <button 
                 onClick={() => setShowMomModal(false)}
-                className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-slate-400 hover:text-slate-600 shadow-sm border border-slate-100 transition-all"
+                className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 border border-white/10 transition-all relative z-10"
               >
                 ✕
               </button>
             </div>
-            <div className="p-8 overflow-y-auto flex-1 bg-white">
-              <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-slate-700 bg-slate-50 p-6 rounded-3xl border border-slate-100 italic">
+            <div className="p-8 overflow-y-auto flex-1 bg-[#0a0c10] custom-scrollbar">
+              <pre className="whitespace-pre-wrap font-sans text-[15px] leading-relaxed text-slate-300 bg-white/5 p-8 rounded-3xl border border-white/5 shadow-inner">
                 {selectedMom}
               </pre>
             </div>
-            <div className="p-8 border-t border-slate-100 flex justify-end gap-3 bg-slate-50/50">
+            <div className="p-8 border-t border-white/10 flex justify-end gap-4 bg-[#0f1219]">
               <button
                 onClick={() => {
                   const blob = new Blob([selectedMom], { type: 'text/plain' });
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement('a');
                   a.href = url;
-                  a.download = `MOM.txt`;
+                  a.download = `AI_Analysis_Report.txt`;
                   a.click();
                 }}
-                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 transition-all"
+                className="px-8 py-4 bg-gradient-to-r from-indigo-500 to-fuchsia-500 hover:from-indigo-400 hover:to-fuchsia-400 text-white rounded-2xl font-bold shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-all hover:-translate-y-1"
               >
-                Download Document
+                Download Archive
               </button>
             </div>
           </div>
