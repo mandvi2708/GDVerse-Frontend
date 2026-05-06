@@ -106,12 +106,12 @@ function CreateSession() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-indigo-300 uppercase tracking-widest pl-1">Discussion Title</label>
+              <label className="block text-xs font-bold text-indigo-300 uppercase tracking-widest pl-1">Discussion Title <span className="text-rose-500">*</span></label>
               <input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="e.g. Q3 Roadmap Review" className="w-full px-4 py-3.5 rounded-xl bg-black/40 border border-white/10 focus:border-fuchsia-500/50 focus:ring-1 focus:ring-fuchsia-500/50 outline-none transition-all text-white placeholder:text-slate-600 shadow-inner" required />
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-indigo-300 uppercase tracking-widest pl-1">Description / Agenda</label>
+              <label className="block text-xs font-bold text-indigo-300 uppercase tracking-widest pl-1">Description / Agenda <span className="text-rose-500">*</span></label>
               <textarea name="description" value={formData.description} onChange={handleChange} placeholder="What will this session cover?" className="w-full px-4 py-3.5 rounded-xl bg-black/40 border border-white/10 focus:border-fuchsia-500/50 focus:ring-1 focus:ring-fuchsia-500/50 outline-none transition-all h-24 resize-none text-sm text-white placeholder:text-slate-600 shadow-inner" required />
             </div>
           </div>
