@@ -237,7 +237,11 @@ function Dashboard() {
                       </div>
                       <div className="flex-1 flex items-center justify-center gap-2 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
                         <span className="text-lg">👥</span>
-                        <span className="text-xs font-bold uppercase tracking-wider">{session.humanCount} HUMANS</span>
+                        <span className="text-xs font-bold uppercase tracking-wider">
+                          {getSessionStatus(session.date, session.time) === 'live' && session.realTimeHumans !== undefined
+                            ? `${session.realTimeHumans} ACTIVE`
+                            : `${session.humanCount} HUMANS`}
+                        </span>
                       </div>
                     </div>
                   </div>
