@@ -450,7 +450,6 @@ function GDSessionRoom() {
           <ControlButton active={videoEnabled} onClick={toggleVideo} icon={videoEnabled ? "videocam" : "videocam_off"} />
           <ControlButton active={isScreenSharing} onClick={toggleScreenShare} icon="screen_share" color="indigo" />
           <div className="w-[1px] h-8 bg-slate-700 mx-2"></div>
-          <ControlButton active={isTranscribing} onClick={() => setIsTranscribing(!isTranscribing)} icon="description" color="yellow" />
           <ControlButton onClick={handleGenerateMOM} icon="auto_awesome" color="purple" loading={isGeneratingMom} />
           {isInterviewMode && <ControlButton onClick={handleGetFeedback} icon="analytics" color="green" loading={isGeneratingFeedback} />}
           <ControlButton onClick={leaveMeeting} icon="call_end" color="red" />
