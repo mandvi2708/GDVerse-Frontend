@@ -25,6 +25,7 @@ function GDSessionRoom() {
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
+  const [screenShareUserId, setScreenShareUserId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
   const [activeTab, setActiveTab] = useState('chat');
@@ -127,6 +128,11 @@ function GDSessionRoom() {
             delete peersRef.current[id];
           }
           setRemotePeers(prev => prev.filter(p => p.userId !== id));
+          setScreenShareUserId(prev => prev === id ? null : prev);
+        });
+
+        socket.on('screen-share-status', ({ userId, isSharing }) => {
+          setScreenShareUserId(isSharing ? userId : null);
         });
 
         setIsLoading(false);
@@ -234,6 +240,8 @@ function GDSessionRoom() {
         if (userVideo.current) userVideo.current.srcObject = screenStream;
         screenTrack.onended = () => stopScreenShare();
         setIsScreenSharing(true);
+        setScreenShareUserId('local');
+        socketRef.current.emit('screen-share-status', { roomId: inviteLink, isSharing: true });
       } catch (e) { console.error(e); }
     } else {
       stopScreenShare();
@@ -248,6 +256,8 @@ function GDSessionRoom() {
     });
     if (userVideo.current) userVideo.current.srcObject = streamRef.current;
     setIsScreenSharing(false);
+    setScreenShareUserId(null);
+    socketRef.current.emit('screen-share-status', { roomId: inviteLink, isSharing: false });
   };
 
   const sendChatMessage = (e) => {
@@ -392,10 +402,35 @@ function GDSessionRoom() {
 
       <div className="flex-1 flex flex-col relative p-6">
         <div className="flex-1 flex items-center justify-center overflow-hidden">
-          <div className={`grid gap-4 w-full h-full max-w-7xl mx-auto ${remotePeers.length === 0 ? 'grid-cols-1 max-w-3xl' : 'grid-cols-2'}`}>
-            <VideoTile stream={localStream} name="You" isLocal videoEnabled={videoEnabled} />
-            {remotePeers.map(peer => <VideoTile key={peer.userId} stream={peer.stream} name={peer.name} />)}
-          </div>
+          {screenShareUserId ? (
+            <div className="flex flex-col w-full h-full gap-4 pb-20">
+               <div className="flex-1 w-full bg-black rounded-3xl overflow-hidden flex items-center justify-center border border-slate-700">
+                  {screenShareUserId === 'local' ? (
+                     <VideoTile stream={localStream} name="You (Screen)" isLocal videoEnabled={videoEnabled} isScreenSharing={true} />
+                  ) : (
+                     remotePeers.find(p => p.userId === screenShareUserId) && 
+                     <VideoTile stream={remotePeers.find(p => p.userId === screenShareUserId).stream} name={remotePeers.find(p => p.userId === screenShareUserId).name} isScreenSharing={true} />
+                  )}
+               </div>
+               <div className="flex h-32 gap-4 overflow-x-auto shrink-0 custom-scrollbar">
+                  {screenShareUserId !== 'local' && (
+                    <div className="w-48 shrink-0">
+                      <VideoTile stream={localStream} name="You" isLocal videoEnabled={videoEnabled} />
+                    </div>
+                  )}
+                  {remotePeers.filter(p => p.userId !== screenShareUserId).map(peer => (
+                    <div className="w-48 shrink-0" key={peer.userId}>
+                      <VideoTile stream={peer.stream} name={peer.name} />
+                    </div>
+                  ))}
+               </div>
+            </div>
+          ) : (
+            <div className={`grid gap-4 w-full h-full max-w-7xl mx-auto ${remotePeers.length === 0 ? 'grid-cols-1 max-w-3xl' : remotePeers.length <= 3 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+              <VideoTile stream={localStream} name="You" isLocal videoEnabled={videoEnabled} />
+              {remotePeers.map(peer => <VideoTile key={peer.userId} stream={peer.stream} name={peer.name} />)}
+            </div>
+          )}
         </div>
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-slate-900/80 backdrop-blur-xl px-8 py-4 rounded-full border border-slate-700 shadow-2xl z-50">
           <ControlButton active={audioEnabled} onClick={toggleAudio} icon={audioEnabled ? "mic" : "mic_off"} />
@@ -415,7 +450,7 @@ function GDSessionRoom() {
   );
 }
 
-function VideoTile({ stream, name, isLocal, videoEnabled = true }) {
+function VideoTile({ stream, name, isLocal, videoEnabled = true, isScreenSharing = false }) {
   const videoRef = useRef();
   
   useEffect(() => { 
@@ -433,7 +468,7 @@ function VideoTile({ stream, name, isLocal, videoEnabled = true }) {
         autoPlay 
         playsInline 
         muted={isLocal ? true : false} 
-        className={`w-full h-full object-cover ${isLocal ? 'scale-x-[-1]' : ''}`} 
+        className={`w-full h-full ${isScreenSharing ? 'object-contain bg-black' : 'object-cover'} ${isLocal && !isScreenSharing ? 'scale-x-[-1]' : ''}`} 
       />
       <div className="absolute bottom-4 left-4"><span className="px-3 py-1 bg-black/50 backdrop-blur-md rounded-full text-[10px] font-bold uppercase">{name}</span></div>
     </div>
