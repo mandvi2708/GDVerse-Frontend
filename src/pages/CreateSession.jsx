@@ -73,89 +73,98 @@ function CreateSession() {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 px-4 py-8 font-sans">
-      <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-100">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Create Session</h2>
-          <p className="text-slate-500 text-sm">Configure your virtual discussion space</p>
+    <div className="min-h-screen flex justify-center items-center bg-[#050505] px-4 py-8 font-sans relative overflow-hidden selection:bg-fuchsia-500/30">
+      
+      {/* Background Matrix Glow */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[10%] -left-[10%] w-[50%] h-[50%] rounded-full bg-indigo-600/10 blur-[120px]"></div>
+        <div className="absolute bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-fuchsia-600/10 blur-[120px]"></div>
+      </div>
+
+      <div className="bg-white/5 backdrop-blur-2xl p-8 rounded-[2.5rem] shadow-2xl max-w-md w-full border border-white/10 relative z-10">
+        <div className="text-center mb-10">
+          <h2 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-fuchsia-400 mb-2">Create Session</h2>
+          <p className="text-slate-400 text-sm font-medium">Configure your virtual discussion space</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
-            <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Discussion Title</label>
-              <input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="e.g. Q3 Roadmap Review" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-slate-800" required />
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-indigo-300 uppercase tracking-widest pl-1">Discussion Title</label>
+              <input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="e.g. Q3 Roadmap Review" className="w-full px-4 py-3.5 rounded-xl bg-black/40 border border-white/10 focus:border-fuchsia-500/50 focus:ring-1 focus:ring-fuchsia-500/50 outline-none transition-all text-white placeholder:text-slate-600 shadow-inner" required />
             </div>
 
-            <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Description / Agenda</label>
-              <textarea name="description" value={formData.description} onChange={handleChange} placeholder="What will this session cover?" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all h-20 resize-none text-sm text-slate-800" required />
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-indigo-300 uppercase tracking-widest pl-1">Description / Agenda</label>
+              <textarea name="description" value={formData.description} onChange={handleChange} placeholder="What will this session cover?" className="w-full px-4 py-3.5 rounded-xl bg-black/40 border border-white/10 focus:border-fuchsia-500/50 focus:ring-1 focus:ring-fuchsia-500/50 outline-none transition-all h-24 resize-none text-sm text-white placeholder:text-slate-600 shadow-inner" required />
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Date</label>
-              <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" required />
+            <div className="space-y-1.5">
+              <label className="block text-[10px] font-bold text-indigo-300 uppercase tracking-widest pl-1">Date</label>
+              <input type="date" name="date" value={formData.date} onChange={handleChange} className="w-full px-3 py-3.5 rounded-xl bg-black/40 border border-white/10 focus:border-fuchsia-500/50 outline-none transition-all text-white text-sm" required />
             </div>
-            <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Time</label>
-              <input type="time" name="time" value={formData.time} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" required />
+            <div className="space-y-1.5">
+              <label className="block text-[10px] font-bold text-indigo-300 uppercase tracking-widest pl-1">Time</label>
+              <input type="time" name="time" value={formData.time} onChange={handleChange} className="w-full px-3 py-3.5 rounded-xl bg-black/40 border border-white/10 focus:border-fuchsia-500/50 outline-none transition-all text-white text-sm" required />
             </div>
-            <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Duration</label>
-              <select name="duration" value={formData.duration} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-slate-800">
-                <option value="15 mins">15 mins</option>
-                <option value="30 mins">30 mins</option>
-                <option value="45 mins">45 mins</option>
-                <option value="60 mins">60 mins</option>
-                <option value="120 mins">120 mins</option>
+            <div className="space-y-1.5">
+              <label className="block text-[10px] font-bold text-indigo-300 uppercase tracking-widest pl-1">Duration</label>
+              <select name="duration" value={formData.duration} onChange={handleChange} className="w-full px-2 py-3.5 rounded-xl bg-black/40 border border-white/10 focus:border-fuchsia-500/50 outline-none transition-all text-white text-sm appearance-none">
+                <option value="15 mins" className="bg-[#0f1219]">15m</option>
+                <option value="30 mins" className="bg-[#0f1219]">30m</option>
+                <option value="45 mins" className="bg-[#0f1219]">45m</option>
+                <option value="60 mins" className="bg-[#0f1219]">60m</option>
+                <option value="120 mins" className="bg-[#0f1219]">120m</option>
               </select>
             </div>
           </div>
 
           <div className="space-y-4">
-            <label className="flex items-center gap-3 cursor-pointer bg-slate-50 p-4 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-all group">
-              <input
-                type="checkbox"
-                name="isInterviewMode"
-                checked={formData.isInterviewMode}
-                onChange={(e) => setFormData(prev => ({ ...prev, isInterviewMode: e.target.checked }))}
-                className="w-5 h-5 accent-indigo-600 cursor-pointer"
-              />
+            <label className="flex items-center gap-4 cursor-pointer bg-black/20 p-4 rounded-2xl border border-white/5 hover:bg-white/5 hover:border-white/10 transition-all group shadow-inner">
+              <div className="relative flex items-center justify-center">
+                <input
+                  type="checkbox"
+                  name="isInterviewMode"
+                  checked={formData.isInterviewMode}
+                  onChange={(e) => setFormData(prev => ({ ...prev, isInterviewMode: e.target.checked }))}
+                  className="w-5 h-5 accent-fuchsia-500 cursor-pointer rounded bg-black/50 border-white/20"
+                />
+              </div>
               <div>
-                <span className="block text-sm font-bold text-slate-800">Enable AI Interview Mode</span>
-                <span className="block text-[10px] text-slate-500 uppercase tracking-tighter">AI will behave as a Recruiter</span>
+                <span className="block text-sm font-bold text-white">Enable AI Interview Mode</span>
+                <span className="block text-[10px] text-fuchsia-300/70 uppercase tracking-wider font-medium mt-0.5">AI will behave as a Recruiter</span>
               </div>
             </label>
 
             {formData.isInterviewMode && (
-              <div className="space-y-1 animate-fade-in">
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Job Description</label>
+               <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-300">
+                <label className="block text-xs font-bold text-indigo-300 uppercase tracking-widest pl-1">Job Description</label>
                 <textarea
                   name="jobDescription"
                   value={formData.jobDescription}
                   onChange={handleChange}
                   placeholder="e.g. Senior Software Engineer..."
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all h-24 resize-none text-sm"
+                  className="w-full px-4 py-3.5 rounded-xl bg-black/40 border border-fuchsia-500/30 focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500 outline-none transition-all h-24 resize-none text-sm text-white placeholder:text-slate-600 shadow-inner"
                 />
               </div>
             )}
           </div>
 
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-4 pt-4">
             <button
               type="submit"
               disabled={isCreating}
-              className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50"
+              className="flex-1 py-4 bg-gradient-to-r from-indigo-500 to-fuchsia-500 hover:from-indigo-400 hover:to-fuchsia-400 text-white rounded-2xl font-bold transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] disabled:opacity-50 hover:-translate-y-1"
             >
-              {isCreating ? 'Creating...' : 'Schedule'}
+              {isCreating ? 'Initializing...' : 'Schedule Sync'}
             </button>
             <button
               type="button"
               onClick={() => handleSubmit(null, true)}
               disabled={isCreating}
-              className="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-lg"
+              className="flex-1 py-4 bg-white/5 text-white rounded-2xl font-bold hover:bg-white/10 transition-all border border-white/10 hover:-translate-y-1"
             >
               Start Now
             </button>
@@ -163,13 +172,28 @@ function CreateSession() {
         </form>
 
         {showSuccess && (
-          <div className="mt-8 p-6 bg-indigo-50 rounded-3xl border border-indigo-100 animate-fade-in">
-            <p className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-2">Share Invite Link</p>
-            <div className="flex items-center bg-white p-2 rounded-xl border border-indigo-200 mb-4">
-              <span className="text-xs font-bold text-indigo-600 truncate flex-1 px-2">{`${window.location.origin}/session/${inviteLink}`}</span>
-              <button onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/session/${inviteLink}`); alert('Copied!'); }} className="p-2 bg-indigo-50 text-indigo-600 rounded-lg material-icons text-sm">content_copy</button>
+          <div className="mt-8 p-6 bg-emerald-500/10 rounded-3xl border border-emerald-500/20 animate-in fade-in zoom-in duration-500">
+            <p className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Gateway Established
+            </p>
+            <div className="flex items-center bg-black/40 p-2 rounded-xl border border-emerald-500/20 mb-5">
+              <span className="text-xs font-mono text-emerald-300 truncate flex-1 px-3">{`${window.location.origin}/session/${inviteLink}`}</span>
+              <button 
+                onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/session/${inviteLink}`); alert('Copied to clipboard!'); }} 
+                className="p-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 rounded-lg transition-colors flex items-center justify-center"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </button>
             </div>
-            <button onClick={() => navigate(`/session/${inviteLink}`)} className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg">Join Meeting</button>
+            <button 
+              onClick={() => navigate(`/session/${inviteLink}`)} 
+              className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-black rounded-2xl font-black transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:-translate-y-1 tracking-wide"
+            >
+              ENTER MEETING
+            </button>
           </div>
         )}
       </div>
