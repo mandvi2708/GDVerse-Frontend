@@ -180,8 +180,8 @@ function Dashboard() {
                       🚀
                     </div>
                     <div>
-                      <h2 className="text-lg font-bold text-slate-800 truncate max-w-[150px]">
-                        {session.inviteLink}
+                      <h2 className="text-lg font-bold text-slate-800 truncate max-w-[200px]" title={session.title || session.inviteLink}>
+                        {session.title || session.inviteLink}
                       </h2>
                       <p className="text-xs text-slate-400 font-medium italic">
                         By {session.creator?.name || 'Unknown'}
@@ -199,7 +199,13 @@ function Dashboard() {
                   )}
                 </div>
 
-                <div className="space-y-3 mb-8">
+                <div className="space-y-3 mb-6">
+                  {session.description && (
+                    <p className="text-sm text-slate-500 line-clamp-2 px-1">
+                      {session.description}
+                    </p>
+                  )}
+                  
                   <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50/50">
                     <div className="flex items-center gap-2">
                       <span className="text-slate-400">📅</span>
@@ -207,7 +213,9 @@ function Dashboard() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-slate-400">⏰</span>
-                      <span className="text-sm font-semibold text-slate-600">{session.time}</span>
+                      <span className="text-sm font-semibold text-slate-600">
+                        {session.time} <span className="text-slate-400 text-xs ml-1">({session.duration || '30 mins'})</span>
+                      </span>
                     </div>
                   </div>
                   

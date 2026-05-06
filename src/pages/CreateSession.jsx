@@ -101,6 +101,7 @@ function CreateSession() {
             <div className="space-y-1">
               <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Time</label>
               <input type="time" name="time" value={formData.time} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" required />
+            </div>
             <div className="space-y-1">
               <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">Duration</label>
               <select name="duration" value={formData.duration} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-slate-800">
