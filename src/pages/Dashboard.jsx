@@ -225,7 +225,7 @@ function Dashboard() {
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-fuchsia-400 text-sm">⏰</div>
                         <span className="text-sm font-bold text-white">
-                          {session.time} <span className="text-slate-400 text-xs font-normal ml-1">({session.duration || '30m'})</span>
+                          {session.duration || '30 mins'}
                         </span>
                       </div>
                     </div>

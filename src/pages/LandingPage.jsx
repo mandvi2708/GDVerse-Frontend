@@ -83,7 +83,8 @@ function LandingPage() {
             </div>
             <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-fuchsia-400">GDVerse</span>
           </div>
-          <div className="flex space-x-4">
+          <div className="flex items-center space-x-4">
+            <Link to="/contact" className="px-4 py-2.5 text-sm font-bold text-slate-400 hover:text-white transition">Contact</Link>
             <Link to="/login" className="px-6 py-2.5 text-sm font-bold text-slate-300 hover:text-white transition bg-white/5 hover:bg-white/10 rounded-xl border border-white/5">Login</Link>
             <Link to="/register" className="px-6 py-2.5 text-sm font-bold bg-gradient-to-r from-indigo-500 to-fuchsia-500 hover:from-indigo-400 hover:to-fuchsia-400 text-white rounded-xl shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-all hover:scale-105">Register</Link>
           </div>
