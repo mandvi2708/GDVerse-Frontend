@@ -10,22 +10,25 @@ function CandidateDashboard() {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || '{}'));
   const navigate = useNavigate();
 
+  const fetchData = async () => {
+    try {
+      const [intRes, quizRes] = await Promise.all([
+        api.get('/api/interviews/my-interviews'),
+        api.get('/api/quizzes/my-quizzes')
+      ]);
+      setInterviews(intRes.data);
+      setQuizzes(quizRes.data);
+    } catch (err) {
+      console.error('Failed to fetch dashboard data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [intRes, quizRes] = await Promise.all([
-          api.get('/api/interviews/my-interviews'),
-          api.get('/api/quizzes/my-quizzes')
-        ]);
-        setInterviews(intRes.data);
-        setQuizzes(quizRes.data);
-      } catch (err) {
-        console.error('Failed to fetch dashboard data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
+    const interval = setInterval(fetchData, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const totalInterviews = interviews.length;
@@ -51,14 +54,29 @@ function CandidateDashboard() {
       <main className="flex-1 p-8 md:p-12 overflow-y-auto">
         <header className="mb-12 flex justify-between items-center">
             <div>
-                <h1 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-500">
-                    Welcome back, {user.name?.split(' ')[0] || 'Candidate'}
-                </h1>
-                <p className="text-slate-400 mt-2 font-medium">Here's your interview readiness overview.</p>
+                <div className="flex items-center gap-4 mb-2">
+                    <h1 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-500">
+                        Welcome back, {user.name?.split(' ')[0] || 'Candidate'}
+                    </h1>
+                    <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Live Sync</span>
+                    </div>
+                </div>
+                <p className="text-slate-400 font-medium">Here's your interview readiness overview.</p>
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-4 items-center">
+                <button 
+                    onClick={() => { setLoading(true); fetchData(); }}
+                    className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all mr-2"
+                >
+                    🔄
+                </button>
                 <Link to="/interview/setup" className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-bold transition-all shadow-lg shadow-indigo-500/20">
                     New Interview
+                </Link>
+                <Link to="/create-session" className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold transition-all shadow-lg shadow-emerald-500/20">
+                    Pro Meeting
                 </Link>
                 <Link to="/quiz/setup" className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-bold transition-all">
                     Take Quiz

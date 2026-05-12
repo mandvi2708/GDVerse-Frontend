@@ -6,17 +6,20 @@ import Sidebar from '../components/Sidebar';
 function ReportsHistory() {
   const [interviews, setInterviews] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
+  const [meetings, setMeetings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('interviews');
 
   const fetchData = async () => {
     try {
-      const [intRes, quizRes] = await Promise.all([
+      const [intRes, quizRes, meetRes] = await Promise.all([
         api.get('/api/interviews/my-interviews'),
-        api.get('/api/quizzes/my-quizzes')
+        api.get('/api/quizzes/my-quizzes'),
+        api.get('/api/sessions/my-sessions')
       ]);
       setInterviews(intRes.data);
       setQuizzes(quizRes.data);
+      setMeetings(meetRes.data);
     } catch (err) {
       console.error('Failed to fetch history:', err);
     } finally {
@@ -66,18 +69,15 @@ function ReportsHistory() {
 
         {/* Tabs */}
         <div className="flex p-1.5 bg-white/5 backdrop-blur-md rounded-2xl mb-10 w-fit gap-2 border border-white/5 shadow-xl">
-          <button
-            onClick={() => setActiveTab('interviews')}
-            className={`px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'interviews' ? 'bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
-          >
-            Interviews
-          </button>
-          <button
-            onClick={() => setActiveTab('quizzes')}
-            className={`px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'quizzes' ? 'bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
-          >
-            Quizzes
-          </button>
+          {['interviews', 'meetings', 'quizzes'].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-8 py-3 rounded-xl text-sm font-bold transition-all duration-300 capitalize ${activeTab === tab ? 'bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
 
         <div className="bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden">
@@ -111,6 +111,25 @@ function ReportsHistory() {
                                 </td>
                             </tr>
                         ))
+                    ) : activeTab === 'meetings' ? (
+                        meetings.map((m, i) => (
+                            <tr key={i} className="hover:bg-white/[0.02] transition-all group">
+                                <td className="p-6 font-bold">{m.title}</td>
+                                <td className="p-6 text-slate-400 text-sm font-medium">{new Date(m.createdAt).toLocaleDateString()}</td>
+                                <td className="p-6 font-black text-emerald-400">{m.minutesOfMeeting ? 'MOM READY' : 'NO DATA'}</td>
+                                <td className="p-6">
+                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-indigo-500/10 text-indigo-500`}>
+                                        Meeting
+                                    </span>
+                                </td>
+                                <td className="p-6">
+                                    <div className="flex gap-4">
+                                        <Link to={`/session/${m.inviteLink}`} className="text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-white">View MOM</Link>
+                                        <button onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/session/${m.inviteLink}`); alert("Link Copied!"); }} className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white">Copy Link</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))
                     ) : (
                         quizzes.map((q, i) => (
                             <tr key={i} className="hover:bg-white/[0.02] transition-all group">
@@ -133,16 +152,16 @@ function ReportsHistory() {
                     )}
                 </tbody>
             </table>
-            {((activeTab === 'interviews' && interviews.length === 0) || (activeTab === 'quizzes' && quizzes.length === 0)) && (
+            {((activeTab === 'interviews' && interviews.length === 0) || (activeTab === 'quizzes' && quizzes.length === 0) || (activeTab === 'meetings' && meetings.length === 0)) && (
                 <div className="p-24 text-center">
                     <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-6">📂</div>
                     <h3 className="text-xl font-bold mb-2">No history found</h3>
                     <p className="text-slate-500 mb-8 max-w-xs mx-auto">Your assessments and reports will appear here automatically after each session.</p>
                     <Link 
-                        to={activeTab === 'interviews' ? "/interview/setup" : "/quiz/setup"} 
+                        to={activeTab === 'interviews' ? "/interview/setup" : activeTab === 'meetings' ? "/create-session" : "/quiz/setup"} 
                         className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-bold transition-all inline-block"
                     >
-                        {activeTab === 'interviews' ? "Start First Interview" : "Take First Quiz"}
+                        {activeTab === 'interviews' ? "Start First Interview" : activeTab === 'meetings' ? "Create First Meeting" : "Take First Quiz"}
                     </Link>
                 </div>
             )}

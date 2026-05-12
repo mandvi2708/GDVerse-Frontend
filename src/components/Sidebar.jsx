@@ -14,6 +14,7 @@ function Sidebar({ active }) {
     { id: 'home', label: 'Home', path: '/', icon: '🏠' },
     { id: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: '📊' },
     { id: 'interview', label: 'AI Interview', path: '/interview/setup', icon: '🎤' },
+    { id: 'meeting', label: 'Professional Meeting', path: '/create-session', icon: '🤝' },
     { id: 'quiz', label: 'AI Quiz', path: '/quiz/setup', icon: '🧪' },
     { id: 'reports', label: 'Reports & History', path: '/reports', icon: '📄' },
     { id: 'profile', label: 'Profile & Settings', path: '/profile', icon: '⚙️' },

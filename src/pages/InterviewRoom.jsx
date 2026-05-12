@@ -22,7 +22,27 @@ function InterviewRoom() {
   const [showStartSpeaking, setShowStartSpeaking] = useState(false);
   const scrollRef = useRef();
   const socketRef = useRef();
-  const [audioStream, setAudioStream] = useState(null);
+  const videoRef = useRef();
+  const [localStream, setLocalStream] = useState(null);
+
+  // Initialize Camera for Real-time Experience
+  useEffect(() => {
+    const startCamera = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        setLocalStream(stream);
+        if (videoRef.current) videoRef.current.srcObject = stream;
+      } catch (err) {
+        console.warn("Interview Camera failed:", err);
+      }
+    };
+    startCamera();
+    return () => {
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
 
   // Speech Recognition
   const recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -175,6 +195,30 @@ function InterviewRoom() {
             </div>
         </div>
 
+        {/* Real-time Candidate Camera */}
+        <div className="relative aspect-video rounded-3xl overflow-hidden bg-white/5 border border-white/10 shadow-2xl group">
+            {localStream ? (
+                <video 
+                    ref={videoRef} 
+                    autoPlay 
+                    playsInline 
+                    muted 
+                    className="w-full h-full object-cover scale-x-[-1]" 
+                />
+            ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+                    <span className="text-2xl animate-pulse">📷</span>
+                    <span className="text-[8px] font-black uppercase tracking-widest text-slate-500">Camera Required</span>
+                </div>
+            )}
+            <div className="absolute top-3 right-3 flex gap-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></div>
+            </div>
+            <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+                <span className="text-[8px] font-black uppercase tracking-widest">Candidate Preview</span>
+            </div>
+        </div>
+
         <div className="space-y-6">
             <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Interview Timeline</h3>
             <div className="space-y-4">
@@ -206,10 +250,11 @@ function InterviewRoom() {
                 <span className="text-xs font-bold text-slate-500 tracking-tighter">ID: {id.substring(0,8)}...</span>
             </div>
             <div className="flex items-center gap-4">
-                <button onClick={() => setIsVoiceMode(!isVoiceMode)} className={`w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center transition-all ${isVoiceMode ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/40' : 'bg-white/5 text-slate-500'}`}>
-                    {isVoiceMode ? '🔊' : '🔇'}
-                </button>
-                <button onClick={() => navigate('/dashboard')} className="px-6 py-2 rounded-xl bg-rose-500/10 text-rose-500 border border-rose-500/20 font-black text-xs uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all">Abort</button>
+                <button onClick={() => {
+                    if (window.confirm("Are you sure you want to end this interview? Your progress will be saved but you won't be able to resume this session.")) {
+                        navigate('/dashboard');
+                    }
+                }} className="px-6 py-2 rounded-xl bg-rose-500/10 text-rose-500 border border-rose-500/20 font-black text-[10px] uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all shadow-lg shadow-rose-500/5">End Interview</button>
             </div>
         </div>
 

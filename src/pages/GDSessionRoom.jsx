@@ -41,6 +41,14 @@ function GDSessionRoom() {
   const [showMomModal, setShowMomModal] = useState(false);
   const [mom, setMom] = useState('');
   const [isGeneratingMom, setIsGeneratingMom] = useState(false);
+  const [chatEnabled, setChatEnabled] = useState(true);
+  const [isCreator, setIsCreator] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(340);
+  const [isResizing, setIsResizing] = useState(false);
+
+  // --- Speech Recognition ---
+  const recognitionRef = useRef(null);
+  const resizerRef = useRef(null);
 
   // Refs for non-reactive storage
   const socketRef = useRef();
@@ -81,17 +89,74 @@ function GDSessionRoom() {
         setBotCount(sessionData.aiCount || 0);
         setIsInterviewMode(statusRes.data.isInterviewMode || false);
         setJobDescription(statusRes.data.jobDescription || "");
+        setChatEnabled(sessionData.chatEnabled !== false);
+        
+        const creatorId = sessionData.creator?._id || sessionData.creator;
+        if (user?._id === creatorId || user?.id === creatorId) {
+          setIsCreator(true);
+        }
 
-        // B. Get Local Media
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        // B. Get Local Media (Granular resilient approach)
+        let stream = null;
+        try {
+          // Attempt 1: Full AV
+          stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        } catch (e) {
+          console.warn("Combined AV failed, trying individual devices...", e.name);
+          try {
+            // Attempt 2: Video only
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            // If video works, try adding audio track later (optional, but let's keep it simple)
+          } catch (vErr) {
+            console.warn("Video failed, trying audio only...", vErr.name);
+            try {
+              // Attempt 3: Audio only
+              stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            } catch (aErr) {
+              console.error("All media devices failed or missing:", aErr.name);
+              // Join as spectator
+            }
+          }
+        }
+        
         streamRef.current = stream;
         setLocalStream(stream);
-        if (userVideo.current) userVideo.current.srcObject = stream;
+        if (userVideo.current && stream) userVideo.current.srcObject = stream;
 
-        // C. Initialize Socket
+        // C. Initialize Speech Recognition
+        if (stream && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+          const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+          recognitionRef.current = new SpeechRecognition();
+          recognitionRef.current.continuous = true;
+          recognitionRef.current.interimResults = false;
+          recognitionRef.current.lang = 'en-US';
+
+          recognitionRef.current.onresult = (event) => {
+            const lastMatch = event.results.length - 1;
+            const text = event.results[lastMatch][0].transcript;
+            if (text.trim()) {
+              socketRef.current.emit('transcript-update', { 
+                roomId: normalizedRoomId, 
+                sender: userName, 
+                text 
+              });
+            }
+          };
+
+          recognitionRef.current.onerror = (e) => console.warn("STT Error:", e);
+          recognitionRef.current.onend = () => {
+            if (streamRef.current?.getAudioTracks()[0]?.enabled) {
+               recognitionRef.current.start();
+            }
+          };
+          
+          recognitionRef.current.start();
+          setIsTranscribing(true);
+        }
+
+        // D. Initialize Socket
         socketRef.current = io(getBaseURL(), {
-          transports: ['polling', 'websocket'],
-          secure: true
+          transports: ['polling', 'websocket']
         });
 
         const socket = socketRef.current;
@@ -99,6 +164,10 @@ function GDSessionRoom() {
 
         socket.on('connect', () => {
           socket.emit('join-room', { roomId: normalizedRoomId, name: userName });
+        });
+
+        socket.on('chat-toggle', ({ enabled }) => {
+          setChatEnabled(enabled);
         });
 
         // --- Signaling Handlers ---
@@ -150,7 +219,8 @@ function GDSessionRoom() {
 
         setIsLoading(false);
       } catch (err) {
-        setError('Failed to initialize meeting. Please check camera permissions.');
+        console.error("CRITICAL INIT ERROR:", err);
+        setError(`Failed to initialize: ${err.message || "Unknown Error"}. Please ensure camera permissions are granted and you are using a supported browser like Chrome.`);
         setIsLoading(false);
       }
     };
@@ -170,6 +240,35 @@ function GDSessionRoom() {
       window.removeEventListener('beforeunload', handleUnload);
     };
   }, [inviteLink, navigate]);
+
+  // --- Resizing Logic ---
+  const startResizing = (e) => {
+    setIsResizing(true);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isResizing) return;
+      const newWidth = e.clientX;
+      if (newWidth > 200 && newWidth < 600) {
+        setSidebarWidth(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
 
   // --- 2. Peer Connection Logic ---
   const createPeer = (userToSignal, callerId, stream, name) => {
@@ -255,7 +354,11 @@ function GDSessionRoom() {
         setIsScreenSharing(true);
         setScreenShareUserId('local');
         socketRef.current.emit('screen-share-status', { roomId: inviteLink, isSharing: true });
-      } catch (e) { console.error(e); }
+      } catch (e) { 
+        if (e.name !== 'NotAllowedError') {
+          console.error("Screen share error:", e);
+        }
+      }
     } else {
       stopScreenShare();
     }
@@ -273,8 +376,39 @@ function GDSessionRoom() {
     socketRef.current.emit('screen-share-status', { roomId: inviteLink, isSharing: false });
   };
 
+  const handleToggleChat = () => {
+    if (!isCreator) return;
+    const newState = !chatEnabled;
+    setChatEnabled(newState);
+    socketRef.current.emit('chat-toggle', { roomId: inviteLink, enabled: newState });
+    // Also persist to DB
+    api.post(`/api/sessions/update/${inviteLink}`, { chatEnabled: newState }).catch(console.error);
+  };
+
+  const handleDownloadChat = () => {
+    if (messages.length === 0) {
+      alert("No messages to download.");
+      return;
+    }
+    const chatContent = messages
+      .map(m => `[${new Date(m.timestamp).toLocaleTimeString()}] ${m.senderName}: ${m.content}`)
+      .join('\n');
+    
+    const blob = new Blob([chatContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Chat_History_${inviteLink}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const sendChatMessage = (e) => {
     e.preventDefault();
+    if (!chatEnabled) {
+      alert("Chat is currently disabled by the host.");
+      return;
+    }
     if (chatInput.trim()) {
       socketRef.current.emit('chat-message', { roomId: inviteLink, content: chatInput, senderName: userName });
       setChatInput('');
@@ -376,16 +510,45 @@ function GDSessionRoom() {
   if (error) return <ErrorScreen message={error} onBack={() => navigate('/dashboard')} />;
 
   return (
-    <div className="flex h-screen bg-[#0f172a] text-white overflow-hidden">
-      <div className="w-85 bg-[#1e293b] border-r border-slate-700 flex flex-col">
+    <div className={`flex h-screen bg-[#0f172a] text-white overflow-hidden ${isResizing ? 'select-none cursor-col-resize' : ''}`}>
+      <div 
+        style={{ width: `${sidebarWidth}px` }}
+        className="bg-[#1e293b] border-r border-slate-700 flex flex-col shrink-0 relative"
+      >
         <div className="p-6 border-b border-slate-700">
           <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">GDVerse</h1>
           <p className="text-xs text-slate-400 mt-1 uppercase tracking-tighter">Session ID: {inviteLink}</p>
         </div>
+        
+        {/* Resize Handle */}
+        <div 
+          onMouseDown={startResizing}
+          className={`absolute -right-[4px] top-0 bottom-0 w-[8px] cursor-col-resize z-[60] transition-colors ${isResizing ? 'bg-indigo-500/50' : 'hover:bg-indigo-500/30'}`}
+        />
         <div className="flex p-2 gap-1 bg-slate-800/50 mx-4 mt-4 rounded-lg">
-          <button onClick={() => setActiveTab('chat')} className={`flex-1 py-2 rounded-md text-sm ${activeTab === 'chat' ? 'bg-indigo-600' : 'text-slate-400'}`}>Chat</button>
-          <button onClick={() => setActiveTab('participants')} className={`flex-1 py-2 rounded-md text-sm ${activeTab === 'participants' ? 'bg-indigo-600' : 'text-slate-400'}`}>People ({remotePeers.length + 1 + botCount})</button>
+          <button onClick={() => setActiveTab('chat')} className={`flex-1 py-2 rounded-md text-sm transition-all ${activeTab === 'chat' ? 'bg-indigo-600 shadow-lg' : 'text-slate-400'}`}>Chat</button>
+          <button onClick={() => setActiveTab('participants')} className={`flex-1 py-2 rounded-md text-sm transition-all ${activeTab === 'participants' ? 'bg-indigo-600 shadow-lg' : 'text-slate-400'}`}>People ({remotePeers.length + 1 + botCount})</button>
         </div>
+
+        {activeTab === 'chat' && (
+          <div className="flex justify-between items-center px-6 mt-4">
+             <button 
+                onClick={handleDownloadChat} 
+                className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-white transition-colors"
+                title="Download Chat History"
+             >
+                Download Chat
+             </button>
+             {isCreator && (
+                <button 
+                  onClick={handleToggleChat} 
+                  className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${chatEnabled ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20' : 'bg-rose-500/10 text-rose-500 hover:bg-rose-500/20'}`}
+                >
+                  Chat: {chatEnabled ? 'ON' : 'OFF'}
+                </button>
+             )}
+          </div>
+        )}
         <div className="flex-1 overflow-hidden flex flex-col mt-4">
           {activeTab === 'chat' ? (
             <div className="flex-1 flex flex-col">
@@ -464,25 +627,36 @@ function GDSessionRoom() {
 
 function VideoTile({ stream, name, isLocal, videoEnabled = true, isScreenSharing = false }) {
   const videoRef = useRef();
+  const hasVideo = stream && stream.getVideoTracks().length > 0 && stream.getVideoTracks()[0].enabled;
   
   useEffect(() => { 
-    if (videoRef.current && stream) {
+    if (videoRef.current && hasVideo) {
       videoRef.current.srcObject = stream;
       videoRef.current.volume = 1;
       videoRef.current.play().catch(e => console.warn("Video play failed:", e));
     } 
-  }, [stream]);
+  }, [stream, hasVideo]);
   
   return (
-    <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-800 border border-slate-700 group">
-      <video 
-        ref={videoRef} 
-        autoPlay 
-        playsInline 
-        muted={isLocal ? true : false} 
-        className={`w-full h-full ${isScreenSharing ? 'object-contain bg-black' : 'object-cover'} ${isLocal && !isScreenSharing ? 'scale-x-[-1]' : ''}`} 
-      />
-      <div className="absolute bottom-4 left-4"><span className="px-3 py-1 bg-black/50 backdrop-blur-md rounded-full text-[10px] font-bold uppercase">{name}</span></div>
+    <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-900 border border-slate-700 group flex items-center justify-center shadow-2xl transition-all hover:border-indigo-500/30">
+      {!hasVideo ? (
+        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800">
+           <div className="w-20 h-20 bg-indigo-500/10 rounded-full flex items-center justify-center text-3xl mb-4 border border-indigo-500/20">
+              {name.includes("You") ? "👤" : "👥"}
+           </div>
+           <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">No Camera Detected</p>
+        </div>
+      ) : (
+        <video 
+          ref={videoRef} 
+          autoPlay 
+          playsInline 
+          className={`w-full h-full ${isScreenSharing ? 'object-contain bg-black' : 'object-cover'} ${isLocal && !isScreenSharing ? 'scale-x-[-1]' : ''}`} 
+        />
+      )}
+      <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+        <span className="text-[10px] font-black uppercase tracking-widest">{name}</span>
+      </div>
     </div>
   );
 }

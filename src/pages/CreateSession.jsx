@@ -62,7 +62,7 @@ function CreateSession() {
         ...formData,
         date: payloadDate,
         time: payloadTime,
-        aiCount: 0,
+        aiCount: 0, 
         isImmediate
       };
       const res = await api.post('/api/sessions/create', payload);
