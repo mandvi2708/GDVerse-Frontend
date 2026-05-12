@@ -517,7 +517,7 @@ function GDSessionRoom() {
       >
         <div className="p-6 border-b border-slate-700">
           <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">GDVerse</h1>
-          <p className="text-xs text-slate-400 mt-1 uppercase tracking-tighter">Session ID: {inviteLink}</p>
+          <p className="text-xs text-slate-400 mt-1 uppercase tracking-tighter">Meeting Link: {inviteLink}</p>
         </div>
         
         {/* Resize Handle */}
@@ -679,22 +679,22 @@ function ControlButton({ active = true, onClick, icon, color = "slate", loading 
   );
 }
 
-function LoadingScreen() { return <div className="min-h-screen flex flex-col items-center justify-center bg-[#0f172a]"><div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-6" /><h2 className="text-xl font-bold text-white">Preparing Session...</h2></div>; }
+function LoadingScreen() { return <div className="min-h-screen flex flex-col items-center justify-center bg-[#0f172a]"><div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-6" /><h2 className="text-xl font-bold text-white">Starting Meeting...</h2></div>; }
 function ErrorScreen({ message, onBack }) { return <div className="min-h-screen flex items-center justify-center bg-[#0f172a] p-6"><div className="bg-slate-800 p-10 rounded-3xl border border-slate-700 text-center"><h2 className="text-2xl font-bold mb-4">Error</h2><p className="text-slate-400 mb-8">{message}</p><button onClick={onBack} className="w-full py-3 bg-indigo-600 rounded-xl font-bold">Back</button></div></div>; }
 
 function MOMModal({ content, onClose, sessionId }) {
   const downloadAsPDF = () => {
     const doc = new jsPDF();
     const splitText = doc.splitTextToSize(content, 180);
-    doc.setFontSize(20); doc.text("Minutes of Meeting", 15, 20);
-    doc.setFontSize(10); doc.text(`Session: ${sessionId}`, 15, 30);
+    doc.setFontSize(20); doc.text("Meeting Summary", 15, 20);
+    doc.setFontSize(10); doc.text(`Meeting Link: ${sessionId}`, 15, 30);
     doc.setFontSize(12); doc.text(splitText, 15, 50);
-    doc.save(`MOM_${sessionId}.pdf`);
+    doc.save(`Summary_${sessionId}.pdf`);
   };
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
       <div className="bg-slate-800 rounded-3xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl border border-slate-700">
-        <div className="p-8 border-b border-slate-700 flex justify-between items-center"><h3 className="text-2xl font-bold">AI MOM</h3><div className="flex gap-4"><button onClick={downloadAsPDF} className="px-4 py-2 bg-indigo-600 rounded-full text-xs font-bold">PDF</button><button onClick={onClose} className="material-icons text-slate-400">close</button></div></div>
+        <div className="p-8 border-b border-slate-700 flex justify-between items-center"><h3 className="text-2xl font-bold">Meeting Summary</h3><div className="flex gap-4"><button onClick={downloadAsPDF} className="px-4 py-2 bg-indigo-600 rounded-full text-xs font-bold">PDF</button><button onClick={onClose} className="material-icons text-slate-400">close</button></div></div>
         <div className="p-8 overflow-y-auto flex-1 text-slate-300"><pre className="whitespace-pre-wrap font-sans text-sm">{content}</pre></div>
       </div>
     </div>
@@ -705,8 +705,8 @@ function FeedbackModal({ content, onClose, sessionId }) {
   const downloadAsPDF = () => {
     const doc = new jsPDF();
     const splitText = doc.splitTextToSize(content, 180);
-    doc.setFontSize(20); doc.text("Interview Assessment Report", 15, 20);
-    doc.setFontSize(10); doc.text(`Session: ${sessionId}`, 15, 30);
+    doc.setFontSize(20); doc.text("Performance Assessment", 15, 20);
+    doc.setFontSize(10); doc.text(`Meeting: ${sessionId}`, 15, 30);
     doc.setFontSize(12); doc.text(splitText, 15, 50);
     doc.save(`Feedback_${sessionId}.pdf`);
   };

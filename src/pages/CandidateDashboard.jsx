@@ -60,10 +60,10 @@ function CandidateDashboard() {
                     </h1>
                     <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
                         <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
-                        <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Live Sync</span>
+                        <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Active</span>
                     </div>
                 </div>
-                <p className="text-slate-400 font-medium">Here's your interview readiness overview.</p>
+                <p className="text-slate-400 font-medium">Here is your interview performance summary.</p>
             </div>
             <div className="flex gap-4 items-center">
                 <button 
@@ -105,8 +105,8 @@ function CandidateDashboard() {
             {[
                 { label: 'Interviews Done', val: totalInterviews, icon: '🎯', color: 'indigo' },
                 { label: 'Quizzes Taken', val: totalQuizzes, icon: '🧪', color: 'fuchsia' },
-                { label: 'Avg Readiness', val: `${Math.round(avgScore)}%`, icon: '📈', color: 'emerald' },
-                { label: 'Level', val: readiness, icon: '🚀', color: 'cyan' }
+                { label: 'Average Score', val: `${Math.round(avgScore)}%`, icon: '📈', color: 'emerald' },
+                { label: 'Current Level', val: readiness, icon: '🚀', color: 'cyan' }
             ].map((s, i) => (
                 <div key={i} className="bg-white/5 border border-white/10 p-6 rounded-3xl relative overflow-hidden group hover:border-indigo-500/30 transition-all">
                     <div className="absolute top-0 right-0 p-4 opacity-10 text-3xl">{s.icon}</div>
@@ -123,7 +123,7 @@ function CandidateDashboard() {
                 <section className="bg-white/5 border border-white/10 rounded-[2rem] p-8">
                     <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
                         <span className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400">📊</span>
-                        Improvement Track
+                        My Progress
                     </h2>
                     <div className="h-64 flex items-end justify-between gap-2 px-4">
                         {interviews.slice(0, 10).reverse().map((int, i) => (
@@ -180,7 +180,7 @@ function CandidateDashboard() {
                 {/* Strengths & Weaknesses */}
                 <section className="bg-white/5 border border-white/10 rounded-[2rem] p-8">
                     <h3 className="text-lg font-bold mb-6 text-emerald-400 flex items-center gap-2">
-                        <span>💪</span> Top Strengths
+                        <span>💪</span> My Strengths
                     </h3>
                     <div className="space-y-3 mb-10">
                         {strengths.map((s, i) => (
@@ -206,7 +206,7 @@ function CandidateDashboard() {
                 <section className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 text-center group">
                     <div className="w-16 h-16 bg-fuchsia-500/20 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 group-hover:scale-110 transition-transform">🧪</div>
                     <h3 className="text-lg font-bold mb-2">Quiz Performance</h3>
-                    <p className="text-slate-500 text-sm mb-6">You've averaged {totalQuizzes > 0 ? '82%' : '0%'} accuracy across your assessments.</p>
+                    <p className="text-slate-500 text-sm mb-6">You've scored an average of {totalQuizzes > 0 ? '82%' : '0%'} on your assessments.</p>
                     <Link to="/quiz/setup" className="block w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-bold transition-all">
                         Test New Skill
                     </Link>

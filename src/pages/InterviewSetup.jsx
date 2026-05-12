@@ -69,9 +69,9 @@ function InterviewPortal() {
             {/* Header */}
             <div className="text-center mb-12">
             <h1 className="text-4xl md:text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-400 to-slate-600 mb-4 uppercase">
-                AI Assessment Portal
+                AI Assessment Center
             </h1>
-            <p className="text-slate-400 font-medium tracking-wide">Next-generation technical screening powered by Gemini AI.</p>
+            <p className="text-slate-400 font-medium tracking-wide">Test your skills with AI-powered interviews and quizzes.</p>
             </div>
 
             {/* Tabs */}
@@ -86,7 +86,7 @@ function InterviewPortal() {
                     onClick={() => setActiveTab('quiz')}
                     className={`px-8 py-3.5 rounded-xl font-bold text-sm transition-all duration-500 ${activeTab === 'quiz' ? 'bg-white text-black shadow-xl shadow-white/10' : 'text-slate-400 hover:text-white'}`}
                 >
-                    🧪 AI Quiz Forge
+                    🧪 AI Quiz
                 </button>
             </div>
 
@@ -95,12 +95,12 @@ function InterviewPortal() {
             
             <div className="space-y-6 relative z-10">
                 <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Full Identity</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Full Name</label>
                 <input required name="fullName" value={formData.fullName} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:border-indigo-500/50 transition-all font-medium" placeholder="John Doe" />
                 </div>
                 
                 <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Job Specification</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Job Role</label>
                 <input required name="jobRole" value={formData.jobRole} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:border-indigo-500/50 transition-all font-medium" placeholder="Senior Frontend Engineer" />
                 </div>
 
@@ -110,7 +110,7 @@ function InterviewPortal() {
                 </div>
 
                 <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Expertise (Years)</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Years of Experience</label>
                 <input required type="number" name="yearsExperience" value={formData.yearsExperience} onChange={handleInputChange} className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:border-indigo-500/50 transition-all font-medium" placeholder="5" />
                 </div>
 
@@ -124,19 +124,19 @@ function InterviewPortal() {
 
             <div className="space-y-6 relative z-10">
                 <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Professional Dossier (Resume)</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Upload Resume</label>
                 <div className="relative group/file">
                     <input required type="file" name="resume" accept=".pdf,.docx" onChange={handleFileChange} className="hidden" id="resume-upload" />
                     <label htmlFor="resume-upload" className="w-full flex flex-col items-center justify-center gap-2 bg-white/5 border-2 border-dashed border-white/10 rounded-2xl py-10 cursor-pointer group-hover/file:border-indigo-500/50 group-hover/file:bg-indigo-500/5 transition-all">
                     <span className="text-3xl">{resume ? '📄' : '☁️'}</span>
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-tighter">{resume ? resume.name : 'Click to Synchronize Resume'}</span>
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-tighter">{resume ? resume.name : 'Select Resume File'}</span>
                     </label>
                 </div>
                 </div>
 
                 <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Job Context (Optional)</label>
-                <textarea name="jdText" value={formData.jdText} onChange={handleInputChange} rows="4" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:border-indigo-500/50 transition-all resize-none font-medium text-sm" placeholder="Paste JD or additional requirements..." />
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Job Description (Optional)</label>
+                <textarea name="jdText" value={formData.jdText} onChange={handleInputChange} rows="4" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:border-indigo-500/50 transition-all resize-none font-medium text-sm" placeholder="Paste the Job Description here..." />
                 </div>
 
                 <button
@@ -144,7 +144,7 @@ function InterviewPortal() {
                     disabled={loading}
                     className={`w-full py-5 rounded-2xl font-black text-lg transition-all transform hover:-translate-y-1 active:scale-95 disabled:opacity-50 ${activeTab === 'interview' ? 'bg-gradient-to-r from-indigo-600 to-blue-600 shadow-xl shadow-indigo-500/20 text-white' : 'bg-gradient-to-r from-fuchsia-600 to-rose-600 shadow-xl shadow-fuchsia-500/20 text-white'}`}
                 >
-                    {loading ? 'INITIALIZING MATRIX...' : `LAUNCH ${activeTab.toUpperCase()}`}
+                    {loading ? 'PREPARING...' : `START ${activeTab.toUpperCase()}`}
                 </button>
             </div>
             </form>

@@ -51,12 +51,12 @@ function Register() {
           </Link>
         </div>
         <h2 className="mt-2 text-center text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-fuchsia-400">
-          Initialize Node
+          Create Account
         </h2>
         <p className="mt-3 text-center text-sm font-medium text-slate-400">
-          Already in the network?{' '}
+          Already have an account?{' '}
           <Link to="/login" className="font-bold text-fuchsia-400 hover:text-fuchsia-300 transition-colors">
-            establish a connection
+            Sign in here
           </Link>
         </p>
       </div>
@@ -77,7 +77,7 @@ function Register() {
 
             <div className="space-y-1.5">
               <label htmlFor="name" className="block text-xs font-bold text-indigo-300 uppercase tracking-widest pl-1">
-                Node Designation (Name)
+                Full Name
               </label>
               <input
                 id="name"
@@ -88,13 +88,13 @@ function Register() {
                 value={formData.name}
                 onChange={handleChange}
                 className="w-full px-4 py-3.5 bg-black/40 border border-white/10 rounded-xl focus:ring-1 focus:ring-fuchsia-500/50 focus:border-fuchsia-500/50 outline-none transition-all text-white shadow-inner placeholder:text-slate-600"
-                placeholder="Agent Smith"
+                placeholder="John Doe"
               />
             </div>
 
             <div className="space-y-1.5">
               <label htmlFor="email" className="block text-xs font-bold text-indigo-300 uppercase tracking-widest pl-1">
-                Identity Vector (Email)
+                Email Address
               </label>
               <input
                 id="email"
@@ -105,13 +105,13 @@ function Register() {
                 value={formData.email}
                 onChange={handleChange}
                 className="w-full px-4 py-3.5 bg-black/40 border border-white/10 rounded-xl focus:ring-1 focus:ring-fuchsia-500/50 focus:border-fuchsia-500/50 outline-none transition-all text-white shadow-inner placeholder:text-slate-600"
-                placeholder="system@gdverse.com"
+                placeholder="your@email.com"
               />
             </div>
 
             <div className="space-y-1.5">
               <label htmlFor="password" className="block text-xs font-bold text-indigo-300 uppercase tracking-widest pl-1">
-                Security Key (Password)
+                Password
               </label>
               <div className="relative">
                 <input
@@ -157,9 +157,9 @@ function Register() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Initializing...
+                    Creating account...
                   </>
-                ) : 'Deploy Account'}
+                ) : 'Get Started'}
               </button>
             </div>
           </form>
@@ -171,7 +171,7 @@ function Register() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-4 bg-[#0a0c10] text-slate-500 font-bold text-xs uppercase tracking-widest rounded-full border border-white/5">
-                  Alternative Protocols
+                  Or sign up with
                 </span>
               </div>
             </div>

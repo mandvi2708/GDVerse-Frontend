@@ -213,8 +213,8 @@ function InterviewRoom() {
         <div className="flex items-center gap-4 mb-4">
             <div className="w-12 h-12 rounded-2xl bg-indigo-500 flex items-center justify-center text-2xl shadow-lg shadow-indigo-500/20">🤖</div>
             <div>
-                <h2 className="font-black tracking-tight text-lg">AI PANEL</h2>
-                <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-[0.2em]">Live Connection</p>
+                <h2 className="font-black tracking-tight text-lg">AI INTERVIEWER</h2>
+                <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-[0.2em]">Active</p>
             </div>
         </div>
 
@@ -243,7 +243,7 @@ function InterviewRoom() {
         </div>
 
         <div className="space-y-6">
-            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Interview Timeline</h3>
+            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Interview Progress</h3>
             <div className="space-y-4">
                 {['Introduction', 'Technical', 'Behavioral', 'Conclusion'].map((s, i) => (
                     <div key={i} className={`flex items-center gap-4 transition-all duration-500 ${stage === s ? 'opacity-100 translate-x-2' : 'opacity-30'}`}>
@@ -255,12 +255,12 @@ function InterviewRoom() {
         </div>
 
         <div className="mt-auto p-6 rounded-3xl bg-white/5 border border-white/10">
-            <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-3">AI Engine Status</h4>
+            <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-3">System Status</h4>
             <div className="flex items-center gap-2 mb-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                <span className="text-xs font-bold">Gemini 1.5 Pro Active</span>
+                <span className="text-xs font-bold">AI Analysis Online</span>
             </div>
-            <p className="text-[10px] text-slate-500 leading-relaxed font-medium">Monitoring technical depth, sentiment, and communication clarity.</p>
+            <p className="text-[10px] text-slate-500 leading-relaxed font-medium">Checking technical knowledge and communication skills.</p>
         </div>
       </aside>
 
@@ -304,7 +304,7 @@ function InterviewRoom() {
                         <div className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce"></div>
                         <div className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce delay-150"></div>
                         <div className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce delay-300"></div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-4 animate-pulse">Analyzing Performance...</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-4 animate-pulse">Thinking...</span>
                     </div>
                 </div>
             )}
@@ -327,7 +327,7 @@ function InterviewRoom() {
                     {isThinking && (
                         <div className="absolute -top-12 left-0 right-0 flex justify-center animate-bounce">
                             <div className="bg-indigo-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg flex items-center gap-2 border border-white/20">
-                                🧠 Thinking Time: {timeLeft}s
+                                🧠 Prep Time: {timeLeft}s
                             </div>
                         </div>
                     )}
@@ -342,7 +342,7 @@ function InterviewRoom() {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         disabled={isThinking}
-                        placeholder={isThinking ? "Synthesizing thoughts..." : "Articulate your response..."}
+                        placeholder={isThinking ? "AI is thinking..." : "Type your answer here..."}
                         className={`w-full bg-white/5 border border-white/10 rounded-3xl px-8 py-5 pr-20 focus:outline-none focus:border-indigo-500/50 transition-all resize-none h-20 md:h-24 font-bold text-lg text-white selection:bg-indigo-500/30 ${isThinking ? 'opacity-50 cursor-not-allowed' : ''}`}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
@@ -371,7 +371,7 @@ function InterviewRoom() {
             <div className="flex justify-center gap-10 mt-8">
                 <div className="flex items-center gap-2">
                     <kbd className="px-2 py-1 bg-white/5 border border-white/10 rounded text-[10px] text-slate-500 font-bold">ENTER</kbd>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">To Dispatch</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">To Send</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <kbd className="px-2 py-1 bg-white/5 border border-white/10 rounded text-[10px] text-slate-500 font-bold">SHIFT + ENTER</kbd>

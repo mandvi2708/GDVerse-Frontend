@@ -16,9 +16,9 @@ function QuizReport() {
     <div className="min-h-screen bg-[#050505] text-white p-6 md:p-16 flex flex-col items-center">
       <div className="max-w-4xl w-full">
         <header className="text-center mb-16">
-            <div className="inline-block px-4 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 text-[10px] font-black uppercase tracking-widest mb-6">Assessment Artifact Generated</div>
-            <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 italic uppercase">Assessment Scorecard</h1>
-            <p className="text-slate-400 font-medium">Detailed breakdown of technical proficiency and skill gaps.</p>
+            <div className="inline-block px-4 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 text-[10px] font-black uppercase tracking-widest mb-6">Report Generated</div>
+            <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 italic uppercase">Quiz Results</h1>
+            <p className="text-slate-400 font-medium">A detailed breakdown of how you did on the quiz.</p>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
@@ -29,14 +29,14 @@ function QuizReport() {
             </div>
 
             <div className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] text-center flex flex-col justify-center items-center">
-                <div className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Readiness Level</div>
+                <div className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Level</div>
                 <div className={`text-2xl font-black uppercase tracking-tight ${report.readinessLevel === 'Strong Hire Potential' ? 'text-emerald-400' : 'text-indigo-400'}`}>
                     {report.readinessLevel}
                 </div>
             </div>
 
             <div className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] text-center flex flex-col justify-center items-center">
-                <div className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Average Velocity</div>
+                <div className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Average Speed</div>
                 <div className="text-3xl font-black text-white">{Math.round(report.averageSpeed)}s</div>
                 <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Per Question</div>
             </div>
@@ -47,7 +47,7 @@ function QuizReport() {
             <div className="space-y-8">
                 <h2 className="text-2xl font-black flex items-center gap-4">
                     <span className="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center border border-rose-500/20">🔍</span>
-                    Skill Gap Analysis
+                    Areas to Improve
                 </h2>
                 <div className="bg-white/5 border border-white/10 p-10 rounded-[3rem] space-y-6">
                     {report.gapAnalysis?.topGaps?.map((gap, i) => (
@@ -65,7 +65,7 @@ function QuizReport() {
             <div className="space-y-8">
                 <h2 className="text-2xl font-black flex items-center gap-4">
                     <span className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center border border-indigo-500/20">💡</span>
-                    Learning Path
+                    What to Learn Next
                 </h2>
                 <div className="bg-white/5 border border-white/10 p-10 rounded-[3rem] space-y-4">
                     {report.gapAnalysis?.recommendations?.map((rec, i) => (
@@ -80,7 +80,7 @@ function QuizReport() {
 
         <div className="mt-16 bg-white/5 border border-white/10 p-10 rounded-[3rem] relative overflow-hidden">
             <div className="absolute top-0 right-0 p-6 opacity-10 text-4xl italic font-black">AI SUMMARY</div>
-            <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] mb-4">Strategic Assessment Summary</h3>
+            <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] mb-4">AI Assessment Summary</h3>
             <p className="text-xl font-bold text-slate-200 leading-relaxed italic">
                 "{report.gapAnalysis?.readinessSummary || 'Strategic overview pending deep analysis.'}"
             </p>
@@ -88,7 +88,7 @@ function QuizReport() {
 
         <div className="flex gap-6 mt-16">
             <button onClick={() => window.print()} className="flex-1 py-5 bg-white/5 border border-white/10 text-white rounded-3xl font-black text-sm uppercase tracking-[0.2em] hover:bg-white/10 transition-all">Download Report</button>
-            <button onClick={() => navigate('/dashboard')} className="flex-1 py-5 bg-white text-black rounded-3xl font-black text-sm uppercase tracking-[0.2em] hover:bg-indigo-50 transition-all">Hub Command</button>
+            <button onClick={() => navigate('/dashboard')} className="flex-1 py-5 bg-white text-black rounded-3xl font-black text-sm uppercase tracking-[0.2em] hover:bg-indigo-50 transition-all">Back to Dashboard</button>
         </div>
       </div>
     </div>

@@ -49,12 +49,12 @@ function Login() {
           </Link>
         </div>
         <h2 className="mt-2 text-center text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-fuchsia-400">
-          Access Gateway
+          Welcome Back
         </h2>
         <p className="mt-3 text-center text-sm font-medium text-slate-400">
-          Initialize your session or{' '}
+          Please sign in to continue or{' '}
           <Link to="/register" className="font-bold text-fuchsia-400 hover:text-fuchsia-300 transition-colors">
-            create a new node
+            create an account
           </Link>
         </p>
       </div>
@@ -75,7 +75,7 @@ function Login() {
 
             <div className="space-y-1.5">
               <label htmlFor="email" className="block text-xs font-bold text-indigo-300 uppercase tracking-widest pl-1">
-                Identity Vector (Email)
+                Email Address
               </label>
               <input
                 id="email"
@@ -86,13 +86,13 @@ function Login() {
                 value={formData.email}
                 onChange={handleChange}
                 className="w-full px-4 py-3.5 bg-black/40 border border-white/10 rounded-xl focus:ring-1 focus:ring-fuchsia-500/50 focus:border-fuchsia-500/50 outline-none transition-all text-white shadow-inner placeholder:text-slate-600"
-                placeholder="system@gdverse.com"
+                placeholder="your@email.com"
               />
             </div>
 
             <div className="space-y-1.5">
               <label htmlFor="password" className="block text-xs font-bold text-indigo-300 uppercase tracking-widest pl-1">
-                Security Key (Password)
+                Password
               </label>
               <input
                 id="password"
@@ -116,13 +116,13 @@ function Login() {
                   className="h-4 w-4 bg-black/50 border-white/20 rounded accent-fuchsia-500 cursor-pointer"
                 />
                 <label htmlFor="remember-me" className="block text-sm font-medium text-slate-400 cursor-pointer">
-                  Maintain Link
+                  Remember me
                 </label>
               </div>
 
               <div className="text-sm">
                 <Link to="/forgot-password" title="Go to Forgot Password" name="forgot-password-link" className="font-bold text-indigo-400 hover:text-indigo-300 transition-colors">
-                  Lost Key?
+                  Forgot Password?
                 </Link>
               </div>
             </div>
@@ -139,9 +139,9 @@ function Login() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Authenticating...
+                    Signing in...
                   </>
-                ) : 'Authorize Login'}
+                ) : 'Sign In'}
               </button>
             </div>
           </form>
@@ -153,7 +153,7 @@ function Login() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-4 bg-[#0a0c10] text-slate-500 font-bold text-xs uppercase tracking-widest rounded-full border border-white/5">
-                  Alternative Protocols
+                  Or sign in with
                 </span>
               </div>
             </div>

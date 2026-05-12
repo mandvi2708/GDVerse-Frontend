@@ -25,7 +25,7 @@ function InterviewReport() {
   if (loading) return (
     <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center justify-center p-8">
       <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <p className="font-bold tracking-widest uppercase text-sm animate-pulse">Generating Matrix Analytics...</p>
+      <p className="font-bold tracking-widest uppercase text-sm animate-pulse">Generating Your Report...</p>
     </div>
   );
 
@@ -40,7 +40,7 @@ function InterviewReport() {
             <h1 className="text-4xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-fuchsia-400 to-rose-400">
               Interview Insights
             </h1>
-            <p className="text-slate-400 mt-2 font-medium">Final performance evaluation and technical breakdown.</p>
+            <p className="text-slate-400 mt-2 font-medium">Your interview feedback and performance results.</p>
           </div>
           <button 
             onClick={() => navigate('/dashboard')}
@@ -70,7 +70,7 @@ function InterviewReport() {
                 </div>
             </div>
             <div className="flex-1 space-y-4 text-center md:text-left">
-                <h3 className="text-2xl font-black uppercase tracking-tight">Executive Summary</h3>
+                <h3 className="text-2xl font-black uppercase tracking-tight">Summary</h3>
                 <p className="text-slate-300 leading-relaxed font-medium">
                     {report.aiSummary}
                 </p>
@@ -78,12 +78,12 @@ function InterviewReport() {
           </div>
 
           <div className="bg-gradient-to-br from-indigo-600 to-fuchsia-600 rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center shadow-2xl shadow-indigo-500/20">
-            <h3 className="text-sm font-black uppercase tracking-[0.2em] mb-4">Hiring Status</h3>
+            <h3 className="text-sm font-black uppercase tracking-[0.2em] mb-4">Overall Result</h3>
             <div className="text-5xl mb-6">
                 {report.overallScore >= 80 ? '🔥' : (report.overallScore >= 60 ? '⚡' : '📚')}
             </div>
             <div className="text-2xl font-black mb-2">
-                {report.overallScore >= 80 ? 'STRONG MATCH' : (report.overallScore >= 60 ? 'POTENTIAL MATCH' : 'NEEDS TRAINING')}
+                {report.overallScore >= 80 ? 'EXCELLENT' : (report.overallScore >= 60 ? 'GOOD' : 'NEEDS WORK')}
             </div>
             <p className="text-sm font-bold opacity-80">Based on technical and behavioral alignment</p>
           </div>
@@ -135,7 +135,7 @@ function InterviewReport() {
 
         {/* Footer */}
         <div className="mt-20 p-12 bg-white/5 border border-white/10 rounded-[3rem] text-center">
-            <h3 className="text-2xl font-black mb-4">Recommended Learning Path</h3>
+            <h3 className="text-2xl font-black mb-4">Next Steps for Learning</h3>
             <div className="flex flex-wrap justify-center gap-3 mb-8">
                 {report.improvementSuggestions.map((s, i) => (
                     <span key={i} className="px-5 py-2.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 font-bold text-sm">
