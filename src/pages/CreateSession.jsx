@@ -9,8 +9,6 @@ function CreateSession() {
     duration: '30 mins',
     date: '',
     time: '',
-    isInterviewMode: false,
-    jobDescription: '',
     humanCount: 2,
   });
 
@@ -64,7 +62,7 @@ function CreateSession() {
         ...formData,
         date: payloadDate,
         time: payloadTime,
-        aiCount: formData.isInterviewMode ? 1 : 0,
+        aiCount: 0,
         isImmediate
       };
       const res = await api.post('/api/sessions/create', payload);
@@ -128,36 +126,6 @@ function CreateSession() {
 
           </div>
 
-          <div className="space-y-4">
-            <label className="flex items-center gap-4 cursor-pointer bg-black/20 p-4 rounded-2xl border border-white/5 hover:bg-white/5 hover:border-white/10 transition-all group shadow-inner">
-              <div className="relative flex items-center justify-center">
-                <input
-                  type="checkbox"
-                  name="isInterviewMode"
-                  checked={formData.isInterviewMode}
-                  onChange={(e) => setFormData(prev => ({ ...prev, isInterviewMode: e.target.checked }))}
-                  className="w-5 h-5 accent-fuchsia-500 cursor-pointer rounded bg-black/50 border-white/20"
-                />
-              </div>
-              <div>
-                <span className="block text-sm font-bold text-white">Enable AI Interview Mode</span>
-                <span className="block text-[10px] text-fuchsia-300/70 uppercase tracking-wider font-medium mt-0.5">AI will behave as a Recruiter</span>
-              </div>
-            </label>
-
-            {formData.isInterviewMode && (
-               <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-300">
-                <label className="block text-xs font-bold text-indigo-300 uppercase tracking-widest pl-1">Job Description</label>
-                <textarea
-                  name="jobDescription"
-                  value={formData.jobDescription}
-                  onChange={handleChange}
-                  placeholder="e.g. Senior Software Engineer..."
-                  className="w-full px-4 py-3.5 rounded-xl bg-black/40 border border-fuchsia-500/30 focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500 outline-none transition-all h-24 resize-none text-sm text-white placeholder:text-slate-600 shadow-inner"
-                />
-              </div>
-            )}
-          </div>
 
           <div className="flex gap-4 pt-4">
             <button

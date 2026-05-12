@@ -94,19 +94,19 @@ function LandingPage() {
         <div className="text-center max-w-5xl mx-auto mb-32">
           <div className="inline-flex items-center px-5 py-2 mb-10 bg-white/5 backdrop-blur-md border border-white/10 rounded-full text-fuchsia-300 text-sm font-bold shadow-inner">
             <span className="w-2.5 h-2.5 bg-fuchsia-500 rounded-full mr-3 animate-pulse shadow-[0_0_10px_rgba(217,70,239,0.8)]"></span>
-            GDVerse Platform Phase 3 Live
+            GDVerse AI Interview Engine v4.0
           </div>
 
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-black mb-8 leading-tight tracking-tight">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-fuchsia-400">
-              Professional Meetings
+              Master Your Next
             </span>
             <br />
-            <span className="text-white">Reimagined.</span>
+            <span className="text-white">AI Interview.</span>
           </h1>
           
           <p className="text-xl md:text-2xl text-slate-400 mb-12 max-w-3xl mx-auto leading-relaxed font-medium">
-            Experience crystal-clear audio, intelligent AI moderation, and real-time collaboration that transforms how teams work.
+            Realistic, resume-aware, and JD-aligned AI interviews with real-time feedback and detailed performance analytics.
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-6 mb-16">
@@ -117,7 +117,7 @@ function LandingPage() {
               <svg className="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              Deploy Your Instance
+              Start Free Assessment
             </Link>
           </div>
         </div>
@@ -128,10 +128,10 @@ function LandingPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div className="relative z-10">
               <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-500">
-                <span className="text-2xl">🎙️</span>
+                <span className="text-2xl">🎤</span>
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">Quantum Audio</h3>
-              <p className="text-slate-400 leading-relaxed font-medium">Studio-quality voice processing with neural noise suppression ensures perfect clarity.</p>
+              <h3 className="text-2xl font-bold mb-4 text-white">Voice Interview</h3>
+              <p className="text-slate-400 leading-relaxed font-medium">Full conversational AI interviews with real-time voice synthesis and speech recognition.</p>
             </div>
           </div>
           
@@ -139,10 +139,10 @@ function LandingPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div className="relative z-10">
               <div className="w-14 h-14 bg-gradient-to-br from-fuchsia-500 to-pink-500 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-fuchsia-500/30 group-hover:scale-110 transition-transform duration-500">
-                <span className="text-2xl">🧠</span>
+                <span className="text-2xl">📄</span>
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">AI Moderation</h3>
-              <p className="text-slate-400 leading-relaxed font-medium">Autonomous assistants guide discussions, prevent overlaps, and maintain meeting focus.</p>
+              <h3 className="text-2xl font-bold mb-4 text-white">Resume Aware</h3>
+              <p className="text-slate-400 leading-relaxed font-medium">Our AI analyzes your resume and JD to ask tailored technical and behavioral questions.</p>
             </div>
           </div>
           
@@ -152,8 +152,8 @@ function LandingPage() {
               <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-emerald-500 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-cyan-500/30 group-hover:scale-110 transition-transform duration-500">
                 <span className="text-2xl">📊</span>
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">Neural Insights</h3>
-              <p className="text-slate-400 leading-relaxed font-medium">Real-time analytical feedback translates raw conversations into structured intelligence.</p>
+              <h3 className="text-2xl font-bold mb-4 text-white">Detailed Reports</h3>
+              <p className="text-slate-400 leading-relaxed font-medium">Get deep skill analysis, readiness scores, and AI-generated improvement suggestions.</p>
             </div>
           </div>
         </div>
