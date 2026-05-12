@@ -27,22 +27,45 @@ function InterviewRoom() {
 
   // Initialize Camera for Real-time Experience
   useEffect(() => {
+    let stream;
     const startCamera = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         setLocalStream(stream);
-        if (videoRef.current) videoRef.current.srcObject = stream;
       } catch (err) {
         console.warn("Interview Camera failed:", err);
       }
     };
     startCamera();
     return () => {
-      if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
       }
     };
   }, []);
+
+  // Update video source whenever localStream is set
+  useEffect(() => {
+    if (videoRef.current && localStream) {
+      videoRef.current.srcObject = localStream;
+    }
+  }, [localStream]);
+
+  const endInterviewManually = async () => {
+    if (!window.confirm("Are you sure you want to end this interview? It will be marked as cancelled.")) return;
+    try {
+        // Mark as cancelled/completed so 'Resume' doesn't show
+        await api.post(`/api/interviews/submit-answer`, {
+            interviewId: id,
+            answer: "[USER ENDED SESSION MANUALLY]",
+            forceComplete: true
+        });
+        navigate('/dashboard');
+    } catch (err) {
+        console.error("Failed to end interview:", err);
+        navigate('/dashboard');
+    }
+  };
 
   // Speech Recognition
   const recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -250,11 +273,7 @@ function InterviewRoom() {
                 <span className="text-xs font-bold text-slate-500 tracking-tighter">ID: {id.substring(0,8)}...</span>
             </div>
             <div className="flex items-center gap-4">
-                <button onClick={() => {
-                    if (window.confirm("Are you sure you want to end this interview? Your progress will be saved but you won't be able to resume this session.")) {
-                        navigate('/dashboard');
-                    }
-                }} className="px-6 py-2 rounded-xl bg-rose-500/10 text-rose-500 border border-rose-500/20 font-black text-[10px] uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all shadow-lg shadow-rose-500/5">End Interview</button>
+                <button onClick={endInterviewManually} className="px-6 py-2 rounded-xl bg-rose-500/10 text-rose-500 border border-rose-500/20 font-black text-[10px] uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all shadow-lg shadow-rose-500/5">End Interview</button>
             </div>
         </div>
 
