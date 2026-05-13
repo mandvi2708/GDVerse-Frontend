@@ -70,9 +70,10 @@ function GDSessionRoom() {
     }
 
     const initSession = async () => {
+      const normalizedRoomId = inviteLink.trim().toLowerCase();
       try {
         // A. Check Session Validity
-        const statusRes = await api.get(`/api/sessions/join/${inviteLink}`);
+        const statusRes = await api.get(`/api/sessions/join/${normalizedRoomId}`);
         const sessionData = statusRes.data;
 
         // Enforce Scheduling Lock
@@ -100,7 +101,14 @@ function GDSessionRoom() {
         let stream = null;
         try {
           // Attempt 1: Full AV
-          stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+          stream = await navigator.mediaDevices.getUserMedia({ 
+            video: true, 
+            audio: {
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true
+            } 
+          });
         } catch (e) {
           console.warn("Combined AV failed, trying individual devices...", e.name);
           try {
@@ -111,7 +119,13 @@ function GDSessionRoom() {
             console.warn("Video failed, trying audio only...", vErr.name);
             try {
               // Attempt 3: Audio only
-              stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+              stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: {
+                  echoCancellation: true,
+                  noiseSuppression: true,
+                  autoGainControl: true
+                } 
+              });
             } catch (aErr) {
               console.error("All media devices failed or missing:", aErr.name);
               // Join as spectator
@@ -160,7 +174,6 @@ function GDSessionRoom() {
         });
 
         const socket = socketRef.current;
-        const normalizedRoomId = inviteLink.trim().toLowerCase();
 
         socket.on('connect', () => {
           socket.emit('join-room', { roomId: normalizedRoomId, name: userName });
@@ -651,6 +664,7 @@ function VideoTile({ stream, name, isLocal, videoEnabled = true, isScreenSharing
           ref={videoRef} 
           autoPlay 
           playsInline 
+          muted={isLocal}
           className={`w-full h-full ${isScreenSharing ? 'object-contain bg-black' : 'object-cover'} ${isLocal && !isScreenSharing ? 'scale-x-[-1]' : ''}`} 
         />
       )}
