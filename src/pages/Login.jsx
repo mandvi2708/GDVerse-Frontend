@@ -183,7 +183,7 @@ function Login() {
                 shape="pill"
                 size="large"
                 text="continue_with"
-                width="100%"
+                width="350"
               />
             </div>
           </div>
