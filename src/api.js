@@ -10,7 +10,8 @@ export const getBaseURL = () => {
   }
   
   if (window.location.hostname.includes('vercel.app')) {
-    return 'https://gdverse-backend.onrender.com';
+    // ⚠️ IMPORTANT: Ensure this matches your actual Render Backend URL!
+    return 'https://gdverse-backend.onrender.com'; 
   }
   
   return 'http://localhost:8080';
